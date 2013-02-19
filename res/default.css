@@ -1,0 +1,72 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+body {
+	font-size: 1em;
+}
+div#leftrow {
+	float: left;
+	width: 140px;
+	margin-left: 20px;
+	border: 1px solid black;
+	border-radius: 10px;
+	padding: 5px;
+	padding-bottom: 0.5%;
+}
+div#rightrow {
+	margin-left: 190px;
+	margin-top: 1%;
+	margin-right: 20px;
+}
+div#clearrow {
+	clear: left;
+}
+div#player_controls {
+	width: 136px;
+	height: 34px;
+}
+div#player_controls a {
+	margin: 1px;
+	border: none;
+}
+div#player_status {
+	border: 1px solid black;
+	border-radius: 10px;
+	padding: 2px;
+}
+p#player_time {
+	font-size: large;
+}
+span#player_elapsed {
+	font-size: xx-large;
+}
+span#player_songinfo {
+	font-size: x-large;
+}
+span#player_album {
+	font-style: italic;
+	font-size: large;
+}
+div#player_progress {
+	margin: 10px;
+}
+div#player_volume {
+	
+}
+div#player_volume_bar {
+	margin: 5px;
+	margin-top: 15px;
+	margin-bottom: 15px;
+}
+div#player_list_tabs {
+	border: 1px solid black;
+	border-radius: 10px;
+	margin-top: 20px;
+}
+.invisible {
+	display: none;
+}
+table#player_playlist tr.playing {
+	background-color: red;
+}
