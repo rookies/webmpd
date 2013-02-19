@@ -33,16 +33,11 @@ var DefaultJS = {
 			}
 		});
 		$("#player_list_tabs").tabs();
-		/*$("#player_repeat").button();
-		$("#player_random").button();
-		$("#player_single").button();
-		$("#player_consume").button();*/
 	},
 	get_status: function ()
 	{
 		$.getJSON('ajax.py?action=status', function (data) {
 			$("#mpd_xfade").html(data.xfade);
-			$("#mpd_playlistlength").html(data.playlistlength);
 			/*
 			 * Set volume slider:
 			*/

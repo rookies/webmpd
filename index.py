@@ -81,8 +81,6 @@ print("""<html>
 				<div id="player_list_tabs-5"></div>
 			</div>
 			XFade: <span id="mpd_xfade"></span>
-			<br />
-			PlaylistLength: <span id="mpd_playlistlength"></span>
 		</div>
 		<div id="clearrow"></div>
 	</body>
