@@ -322,7 +322,7 @@ var DefaultJS = {
 					classes = ' class="even"';
 				else
 					classes = '';
-				$("#player_playlist tbody").append('<tr' + classes + '><td class="invisible">' + data[i].id + '</td><td>' + min + ':' + sec + '</td><td>' + data[i].artist + '</td><td>' + data[i].title + '</td><td>' + data[i].date + '</td><td>' + data[i].album + '</td><td><a href="#remove" onclick="return !DefaultJS.remove_playlistitem(' + data[i].id + ');"><img src="res/img/list-remove.png" width="16" height="16" alt="Remove" /></a></td></tr>');
+				$("#player_playlist tbody").append('<tr' + classes + '><td class="invisible">' + data[i].id + '</td><td>' + min + ':' + sec + '</td><td>' + data[i].artist + '</td><td>' + data[i].title + '</td><td>' + data[i].date + '</td><td>' + data[i].album + '</td><td><a href="#remove" onclick="return !DefaultJS.remove_playlistitem(' + data[i].id + ');"><img src="res/img/list-remove.png" width="16" height="16" alt="Remove" title="Remove" /></a> <a href="#play" onclick="return !DefaultJS.play_playlistitem(' + data[i].id + ');"><img src="res/img/media-playback-start-small.png" width="16" height="16" alt="Start playback here" title="Start playback here" /></a></td></tr>');
 				DefaultJS.playlist.push(parseInt(data[i].id));
 				// data[i]:
 				// {
@@ -369,6 +369,7 @@ var DefaultJS = {
 			var i;
 			$("#database_table_songs_header").html("Songs");
 			$("#database_table_artists").append('<li><a href="#albums" onclick="return !DefaultJS.get_albums(\'\', true);">ALL ARTISTS</a></li>');
+			data.sort();
 			for (i=0; i < data.length; i++)
 			{
 				$("#database_table_artists").append('<li><a href="#add" onclick="return !DefaultJS.addto_playlist_artist(\'' + data[i].replace("'", "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a><a href="#albums" onclick="return !DefaultJS.get_albums(\'' + data[i].replace("'", "\\'") + '\');">' + data[i] + '</a></li>');
@@ -396,6 +397,7 @@ var DefaultJS = {
 				$("#database_table_albums").append('<li><a href="#songs" onclick="return !DefaultJS.get_songs(\'\', \'\', false, true);">ALL SONGS</a></li>');
 			else
 				$("#database_table_albums").append('<li><a href="#songs" onclick="return !DefaultJS.get_songs(\'' + artist.replace("'", "\\'") + '\', \'\', true, false);">ALL SONGS</a></li>');
+			data.sort();
 			for (i=0; i < data.length; i++)
 			{
 				if (data[i] == "")
@@ -510,5 +512,11 @@ var DefaultJS = {
 	clear_status: function ()
 	{
 		$("#player_statusmessage").addClass("invisible");
+	},
+	play_playlistitem: function (id)
+	{
+		$.get('ajax.py?action=playid&id=' + id, function (data) {
+			DefaultJS.get_status();
+		});
 	}
 }
