@@ -51,6 +51,7 @@ print("""<html>
 				<br />
 				<div id="player_progress"></div>
 			</div>
+			<div id="player_statusmessage" class="invisible"></div>
 			<div id="player_list_tabs">
 				<ul>
 					<li><a href="#player_list_tabs-1">Playlist</a></li>

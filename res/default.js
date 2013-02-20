@@ -369,7 +369,7 @@ var DefaultJS = {
 			$("#database_table_artists").append('<li><a href="#albums" onclick="return !DefaultJS.get_albums(\'\', true);">ALL ARTISTS</a></li>');
 			for (i=0; i < data.length; i++)
 			{
-				$("#database_table_artists").append('<li><a href="#albums" onclick="return !DefaultJS.get_albums(\'' + data[i] + '\');">' + data[i] + '</a></li>');
+				$("#database_table_artists").append('<li><a href="#albums" onclick="return !DefaultJS.get_albums(\'' + data[i].replace("'", "\\'") + '\');">' + data[i] + '</a></li>');
 			}
 		});
 	},
@@ -393,7 +393,7 @@ var DefaultJS = {
 			if (all == true)
 				$("#database_table_albums").append('<li><a href="#songs" onclick="return !DefaultJS.get_songs(\'\', \'\', false, true);">ALL SONGS</a></li>');
 			else
-				$("#database_table_albums").append('<li><a href="#songs" onclick="return !DefaultJS.get_songs(\'' + artist + '\', \'\', true, false);">ALL SONGS</a></li>');
+				$("#database_table_albums").append('<li><a href="#songs" onclick="return !DefaultJS.get_songs(\'' + artist.replace("'", "\\'") + '\', \'\', true, false);">ALL SONGS</a></li>');
 			for (i=0; i < data.length; i++)
 			{
 				if (data[i] == "")
@@ -401,7 +401,7 @@ var DefaultJS = {
 					if (all == true)
 						$("#database_table_albums").append('<li><a href="#songs" onclick="return !DefaultJS.get_songs(\'\', \'\', false, false);">[Unknown album]</a></li>');
 					else
-						$("#database_table_albums").append('<li><a href="#songs" onclick="return !DefaultJS.get_songs(\'' + artist + '\', \'\', false, false);">[Unknown album]</a></li>');
+						$("#database_table_albums").append('<li><a href="#songs" onclick="return !DefaultJS.get_songs(\'' + artist.replace("'", "\\'") + '\', \'\', false, false);">[Unknown album]</a></li>');
 					break;
 				};
 			}
@@ -410,9 +410,9 @@ var DefaultJS = {
 				if (data[i] != "")
 				{
 					if (all == true)
-						$("#database_table_albums").append('<li><a href="#songs" onclick="return !DefaultJS.get_songs(\'\', \'' + data[i] + '\', false, false);">' + data[i] + '</a></li>');
+						$("#database_table_albums").append('<li><a href="#songs" onclick="return !DefaultJS.get_songs(\'\', \'' + data[i].replace("'", "\\'") + '\', false, false);">' + data[i] + '</a></li>');
 					else
-						$("#database_table_albums").append('<li><a href="#songs" onclick="return !DefaultJS.get_songs(\'' + artist + '\', \'' + data[i] + '\', false, false);">' + data[i] + '</a></li>');
+						$("#database_table_albums").append('<li><a href="#songs" onclick="return !DefaultJS.get_songs(\'' + artist.replace("'", "\\'") + '\', \'' + data[i].replace("'", "\\'") + '\', false, false);">' + data[i] + '</a></li>');
 				};
 			}
 		});
@@ -450,9 +450,52 @@ var DefaultJS = {
 			};
 			for (i=0; i < data.length; i++)
 			{
-				$("#database_table_songs").append('<li>' + data[i].title + '</li>');
+				if (data[i].title == null)
+					showtitle = data[i].file;
+				else
+					showtitle = data[i].title;
+				$("#database_table_songs").append('<li><a href="#add" onclick="return !DefaultJS.addto_playlist(\'' + data[i].file.replace("'", "\\'") + '\');">' + showtitle + '</a></li>');
 			}
 		});
 		return true;
+	},
+	addto_playlist: function (file)
+	{
+		$.getJSON('ajax.py?action=add&file=' + file, function (data) {
+			DefaultJS.get_status();
+			/*
+			 * Show status:
+			*/
+			if (data.artist != null && data.title != null && data.album != null)
+				status = data.artist + ' - ' + data.title + ' (' + data.album + ')';
+			else if (data.artist != null && data.title != null)
+				status = data.artist + ' - ' + data.title;
+			else
+				status = data.file;
+			DefaultJS.show_status(status + ' successfully added to playlist!', "info");
+		});
+		return true;
+	},
+	status_timeout: null,
+	show_status: function (status, type="info", timeout=10000)
+	{
+		$("#player_statusmessage").html(status);
+		switch (type)
+		{
+			case "error":
+				$("#player_statusmessage").css("background-image", "url('res/img/dialog-error.png')");
+				break;
+			case "warning":
+				$("#player_statusmessage").css("background-image", "url('res/img/dialog-warning.png')");
+				break;
+			default:
+				$("#player_statusmessage").css("background-image", "url('res/img/dialog-information.png')");
+		}
+		$("#player_statusmessage").removeClass("invisible");
+		this.status_timeout = window.setTimeout(this.clear_status, timeout);
+	},
+	clear_status: function ()
+	{
+		$("#player_statusmessage").addClass("invisible");
 	}
 }

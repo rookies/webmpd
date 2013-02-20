@@ -51,6 +51,17 @@ span#player_album {
 div#player_progress {
 	margin: 10px;
 }
+div#player_statusmessage {
+	border: 1px solid black;
+	border-radius: 10px;
+	margin-top: 20px;
+	background-image: url('img/dialog-information.png');
+	background-repeat: no-repeat;
+	background-position: 5px 50%;
+	height: 32px;
+	padding: 5px;
+	padding-left: 50px;
+}
 div#player_volume {
 	
 }

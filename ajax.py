@@ -204,6 +204,18 @@ else:
 					else:
 						print(json.dumps(MPD_CLIENT.find("artist", artist, "album", album)))
 					mpd_disconnect()
-				
+	elif action == "add":
+		try:
+			f = qs["file"][0]
+		except:
+			send_error(102, "Invalid argument!")
+		else:
+			mpd_connect()
+			res = MPD_CLIENT.findadd("file", f)
+			if (res == None):
+				print(json.dumps(MPD_CLIENT.lsinfo(f)[0]))
+			else:
+				print(json.dumps(res))
+			mpd_disconnect()
 	else:
 		send_error(101, "Invalid action specified!")
