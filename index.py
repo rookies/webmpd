@@ -59,7 +59,7 @@ print("""<html>
 					<li><a href="#player_list_tabs-3">File System</a></li>
 				</ul>
 				<div id="player_list_tabs-1">
-					<table border="1" id="player_playlist">
+					<table id="player_playlist">
 						<thead>
 							<tr>
 								<th class="invisible"></th>
@@ -77,7 +77,7 @@ print("""<html>
 					</table>
 				</div>
 				<div id="player_list_tabs-2">
-					<table border="1" id="database_table">
+					<table id="database_table">
 						<thead>
 							<th>Artists</th>
 							<th id="database_table_albums_header">Albums</th>

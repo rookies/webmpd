@@ -318,6 +318,8 @@ var DefaultJS = {
 					data[i].album = '';
 				if (DefaultJS.status_data.songid == data[i].id && DefaultJS.status_data.state != "stop")
 					classes = ' class="playing"';
+				else if (i%2 == 0)
+					classes = ' class="even"';
 				else
 					classes = '';
 				$("#player_playlist tbody").append('<tr' + classes + '><td class="invisible">' + data[i].id + '</td><td>' + min + ':' + sec + '</td><td>' + data[i].artist + '</td><td>' + data[i].title + '</td><td>' + data[i].date + '</td><td>' + data[i].album + '</td><td><a href="#remove" onclick="return !DefaultJS.remove_playlistitem(' + data[i].id + ');"><img src="res/img/list-remove.png" width="16" height="16" alt="Remove" /></a></td></tr>');

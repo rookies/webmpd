@@ -78,8 +78,18 @@ div#player_list_tabs {
 .invisible {
 	display: none;
 }
+table#player_playlist td,
+table#player_playlist th {
+	padding: 5px;
+}
+table#player_playlist tr {
+	background-color: #BFBFBF;
+}
+table#player_playlist tr.even {
+	background-color: #E5E5E5;
+}
 table#player_playlist tr.playing {
-	background-color: red;
+	background-color: #FFD588;
 }
 table#database_table {
 	width: 100%;
