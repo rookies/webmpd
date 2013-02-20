@@ -422,11 +422,11 @@ var DefaultJS = {
 			data.sort();
 			for (i=0; i < data.length; i++)
 			{
-				$("#database_table_artists").append('<li><a href="#add" onclick="return !DefaultJS.addto_playlist_artist(\'' + data[i].replace("'", "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a><a href="#albums" onclick="return !DefaultJS.get_albums(\'' + data[i].replace("'", "\\'") + '\');">' + data[i] + '</a></li>');
+				$("#database_table_artists").append('<li><a href="#add" onclick="return !DefaultJS.addto_playlist_artist(\'' + data[i].replace("'", "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a><a href="#albums" onclick="return !DefaultJS.get_albums(\'' + data[i].replace("'", "\\'") + '\', false);">' + data[i] + '</a></li>');
 			}
 		});
 	},
-	get_albums: function (artist, all=false)
+	get_albums: function (artist, all)
 	{
 		/*
 		 * Clean up & set table headers:
@@ -542,8 +542,12 @@ var DefaultJS = {
 		return true;
 	},
 	status_timeout: null,
-	show_status: function (status, type="info", timeout=10000)
+	show_status: function (status, type, timeout)
 	{
+		if (type == null)
+			type = "info";
+		if (timeout == null)
+			timeout = 10000;
 		$("#player_statusmessage").html(status);
 		switch (type)
 		{
