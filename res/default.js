@@ -7,6 +7,7 @@ var DefaultJS = {
 	init: function ()
 	{
 		this.get_status();
+		this.get_artists();
 		this.get_status_timeout = window.setTimeout(this.get_status, 1000);
 		$("#player_progress").slider({
 			value: 0,
@@ -347,6 +348,110 @@ var DefaultJS = {
 	{
 		$.get('ajax.py?action=deleteid&id=' + id, function (data) {
 			DefaultJS.get_status();
+		});
+		return true;
+	},
+	get_artists: function ()
+	{
+		/*
+		 * Clean up & set table headers:
+		*/
+		$("#database_table_artists li").remove();
+		$("#database_table_albums li").remove();
+		$("#database_table_albums_header").html("Albums");
+		$("#database_table_songs li").remove();
+		/*
+		 * Receive artists:
+		*/
+		$.getJSON('ajax.py?action=artists', function (data) {
+			var i;
+			$("#database_table_songs_header").html("Songs");
+			$("#database_table_artists").append('<li><a href="#albums" onclick="return !DefaultJS.get_albums(\'\', true);">ALL ARTISTS</a></li>');
+			for (i=0; i < data.length; i++)
+			{
+				$("#database_table_artists").append('<li><a href="#albums" onclick="return !DefaultJS.get_albums(\'' + data[i] + '\');">' + data[i] + '</a></li>');
+			}
+		});
+	},
+	get_albums: function (artist, all=false)
+	{
+		/*
+		 * Clean up & set table headers:
+		*/
+		if (all)
+			$("#database_table_albums_header").html("All Albums");
+		else
+			$("#database_table_albums_header").html("Albums (" + artist + ")");
+		$("#database_table_albums li").remove();
+		$("#database_table_songs li").remove();
+		$("#database_table_songs_header").html("Songs");
+		/*
+		 * Receive albums:
+		*/
+		$.getJSON('ajax.py?action=albums&artist=' + artist + ((all==true)?'&all':''), function (data) {
+			var i;
+			if (all == true)
+				$("#database_table_albums").append('<li><a href="#songs" onclick="return !DefaultJS.get_songs(\'\', \'\', false, true);">ALL SONGS</a></li>');
+			else
+				$("#database_table_albums").append('<li><a href="#songs" onclick="return !DefaultJS.get_songs(\'' + artist + '\', \'\', true, false);">ALL SONGS</a></li>');
+			for (i=0; i < data.length; i++)
+			{
+				if (data[i] == "")
+				{
+					if (all == true)
+						$("#database_table_albums").append('<li><a href="#songs" onclick="return !DefaultJS.get_songs(\'\', \'\', false, false);">[Unknown album]</a></li>');
+					else
+						$("#database_table_albums").append('<li><a href="#songs" onclick="return !DefaultJS.get_songs(\'' + artist + '\', \'\', false, false);">[Unknown album]</a></li>');
+					break;
+				};
+			}
+			for (i=0; i < data.length; i++)
+			{
+				if (data[i] != "")
+				{
+					if (all == true)
+						$("#database_table_albums").append('<li><a href="#songs" onclick="return !DefaultJS.get_songs(\'\', \'' + data[i] + '\', false, false);">' + data[i] + '</a></li>');
+					else
+						$("#database_table_albums").append('<li><a href="#songs" onclick="return !DefaultJS.get_songs(\'' + artist + '\', \'' + data[i] + '\', false, false);">' + data[i] + '</a></li>');
+				};
+			}
+		});
+		return true;
+	},
+	get_songs: function (artist, album, all_artist, all)
+	{
+		/*
+		 * Clean up:
+		*/
+		$("#database_table_songs li").remove();
+		/*
+		 * Receive songs:
+		*/
+		$.getJSON('ajax.py?action=songs&artist=' + artist + '&album=' + album + ((all_artist==true)?'&all_artist':'') + ((all==true)?'&all':''), function (data) {
+			var i;
+			if (all)
+				$("#database_table_songs_header").html("All Songs");
+			else if (all_artist)
+			{
+				if (artist == "")
+					$("#database_table_songs_header").html("Songs (Unknown Artist)");
+				else
+					$("#database_table_songs_header").html("Songs (" + artist + ")");
+			}
+			else
+			{
+				if (artist == "" && data[0].artist == null)
+					artist = "Unknown artist";
+				else if (data[0].artist != null)
+					artist = data[0].artist;
+				if (album == "")
+					album = "Unknown album";
+				$("#database_table_songs_header").html("Songs (" + artist + " - " + album +")");
+			};
+			for (i=0; i < data.length; i++)
+			{
+				$("#database_table_songs").append('<li>' + data[i].title + '</li>');
+			}
 		});
 		return true;
 	}

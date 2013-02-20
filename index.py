@@ -54,10 +54,8 @@ print("""<html>
 			<div id="player_list_tabs">
 				<ul>
 					<li><a href="#player_list_tabs-1">Playlist</a></li>
-					<li><a href="#player_list_tabs-2">Artists</a></li>
-					<li><a href="#player_list_tabs-3">Albums</a></li>
-					<li><a href="#player_list_tabs-4">Songs</a></li>
-					<li><a href="#player_list_tabs-5">File System</a></li>
+					<li><a href="#player_list_tabs-2">Database</a></li>
+					<li><a href="#player_list_tabs-3">File System</a></li>
 				</ul>
 				<div id="player_list_tabs-1">
 					<table border="1" id="player_playlist">
@@ -77,10 +75,29 @@ print("""<html>
 						</tbody>
 					</table>
 				</div>
-				<div id="player_list_tabs-2"></div>
+				<div id="player_list_tabs-2">
+					<table border="1" id="database_table">
+						<thead>
+							<th>Artists</th>
+							<th id="database_table_albums_header">Albums</th>
+							<th id="database_table_songs_header">Songs</th>
+						</thead>
+						<tbody>
+							<tr>
+								<td>
+									<ul id="database_table_artists"></ul>
+								</td>
+								<td>
+									<ul id="database_table_albums"></ul>
+								</td>
+								<td>
+									<ul id="database_table_songs"></ul>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
 				<div id="player_list_tabs-3"></div>
-				<div id="player_list_tabs-4"></div>
-				<div id="player_list_tabs-5"></div>
 			</div>
 			XFade: <span id="mpd_xfade"></span>
 		</div>

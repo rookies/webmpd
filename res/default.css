@@ -70,3 +70,10 @@ div#player_list_tabs {
 table#player_playlist tr.playing {
 	background-color: red;
 }
+table#database_table {
+	width: 100%;
+}
+table#database_table td {
+	vertical-align: top;
+	width: 33%;
+}

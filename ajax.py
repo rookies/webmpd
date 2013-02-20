@@ -155,5 +155,55 @@ else:
 			mpd_connect()
 			print(json.dumps(MPD_CLIENT.deleteid(id_)))
 			mpd_disconnect()
+	elif action == "artists":
+		mpd_connect()
+		print(json.dumps(MPD_CLIENT.list("artist")))
+		mpd_disconnect()
+	elif action == "albums":
+		if "all" in qs:
+			mpd_connect()
+			print(json.dumps(MPD_CLIENT.list("album")))
+			mpd_disconnect()
+		else:
+			try:
+				artist = qs["artist"][0]
+			except:
+				send_error(102, "Invalid argument!")
+			else:
+				mpd_connect()
+				print(json.dumps(MPD_CLIENT.list("album", artist)))
+				mpd_disconnect()
+	elif action == "songs":
+		if "all" in qs:
+			mpd_connect()
+			print(json.dumps(MPD_CLIENT.listallinfo()))
+			mpd_disconnect()
+		elif "all_artist" in qs:
+			try:
+				artist = qs["artist"][0]
+			except:
+				send_error(102, "Invalid argument!")
+			else:
+				mpd_connect()
+				print(json.dumps(MPD_CLIENT.find("artist", artist)))
+				mpd_disconnect()
+		else:
+			try:
+				artist = qs["artist"][0]
+			except:
+				send_error(102, "Invalid argument!")
+			else:
+				try:
+					album = qs["album"][0]
+				except:
+					send_error(102, "Invalid argument!")
+				else:
+					mpd_connect()
+					if artist == "":
+						print(json.dumps(MPD_CLIENT.find("album", album)))
+					else:
+						print(json.dumps(MPD_CLIENT.find("artist", artist, "album", album)))
+					mpd_disconnect()
+				
 	else:
 		send_error(101, "Invalid action specified!")
