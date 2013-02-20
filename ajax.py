@@ -10,7 +10,7 @@ except BaseException as e:
 	print(e)
 	exit()
 ## IMPORT STANDARD LIBRARIES:
-import json, os, urllib.parse
+import json, os, urllib.parse, sys
 ## IMPORT DELIVERED LIBRARIES:
 import libs.config as config
 import libs.mpd as mpd
@@ -146,5 +146,14 @@ else:
 				mpd_connect()
 				print(json.dumps(MPD_CLIENT.moveid(fr, to)))
 				mpd_disconnect()
+	elif action == "deleteid":
+		try:
+			id_ = int(qs["id"][0])
+		except:
+			send_error(102, "Invalid argument!")
+		else:
+			mpd_connect()
+			print(json.dumps(MPD_CLIENT.deleteid(id_)))
+			mpd_disconnect()
 	else:
 		send_error(101, "Invalid action specified!")

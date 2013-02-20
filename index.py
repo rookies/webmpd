@@ -69,6 +69,7 @@ print("""<html>
 								<th>Title</th>
 								<th>Year</th>
 								<th>Album</th>
+								<th>Actions</th>
 							</tr>
 						</thead>
 						<tbody>

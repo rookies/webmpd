@@ -319,7 +319,7 @@ var DefaultJS = {
 					classes = ' class="playing"';
 				else
 					classes = '';
-				$("#player_playlist tbody").append('<tr' + classes + '><td class="invisible">' + data[i].id + '</td><td>' + min + ':' + sec + '</td><td>' + data[i].artist + '</td><td>' + data[i].title + '</td><td>' + data[i].date + '</td><td>' + data[i].album + '</td></tr>');
+				$("#player_playlist tbody").append('<tr' + classes + '><td class="invisible">' + data[i].id + '</td><td>' + min + ':' + sec + '</td><td>' + data[i].artist + '</td><td>' + data[i].title + '</td><td>' + data[i].date + '</td><td>' + data[i].album + '</td><td><a href="#remove" onclick="return !DefaultJS.remove_playlistitem(' + data[i].id + ');"><img src="res/img/list-remove.png" width="16" height="16" alt="Remove" /></a></td></tr>');
 				DefaultJS.playlist.push(parseInt(data[i].id));
 				// data[i]:
 				// {
@@ -342,5 +342,12 @@ var DefaultJS = {
 		$.get('ajax.py?action=moveid&from=' + id + '&to=' + pos, function (data) {
 			DefaultJS.get_status();
 		});
+	},
+	remove_playlistitem: function (id)
+	{
+		$.get('ajax.py?action=deleteid&id=' + id, function (data) {
+			DefaultJS.get_status();
+		});
+		return true;
 	}
 }
