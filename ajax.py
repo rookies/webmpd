@@ -197,7 +197,12 @@ else:
 	elif action == "songs":
 		if "all" in qs:
 			mpd_connect()
-			print(json.dumps(MPD_CLIENT.listallinfo()))
+			res = MPD_CLIENT.listallinfo()
+			res2 = []
+			for item in res:
+				if "file" in item:
+					res2.append(item)
+			print(json.dumps(res2))
 			mpd_disconnect()
 		elif "all_artist" in qs:
 			try:
