@@ -57,10 +57,16 @@ print("""<html>
 			<input type="checkbox" id="player_random" onchange="DefaultJS.update_modifiers();" /> <label for="player_random">random</label><br />
 			<input type="checkbox" id="player_single" onchange="DefaultJS.update_modifiers();" /> <label for="player_single">single</label><br />
 			<input type="checkbox" id="player_consume" onchange="DefaultJS.update_modifiers();" /> <label for="player_consume">consume</label>
+			<br />
 			<div id="player_volume">
-				<img src="res/img/audio-volume-high.png" alt="Full volume" height="32" width="32" />
+				<img src="res/img/audio-volume-high.png" title="Set volume to 100%" alt="Full volume" height="32" width="32" />
 				<div id="player_volume_bar"></div>
-				<img src="res/img/audio-volume-muted.png" alt="Muted" height="32" width="32" />
+				<img src="res/img/audio-volume-muted.png" title="Mute sound" alt="Muted" height="32" width="32" />
+			</div>
+			<div id="player_xfade">
+				<img src="res/img/list-add-big.png" title="Set Crossfade to 30 sec" alt="Full XFade" height="32" width="32" />
+				<div id="player_xfade_bar"></div>
+				<img src="res/img/list-remove-big.png" title="Disable Crossfade" alt="No XFade" height="32" width="32" />
 			</div>
 		</div>
 		<div id="rightrow">
@@ -121,7 +127,6 @@ print("""<html>
 				</div>
 				<div id="player_list_tabs-3"></div>
 			</div>
-			XFade: <span id="mpd_xfade"></span>
 		</div>
 		<div id="clearrow"></div>
 	</body>

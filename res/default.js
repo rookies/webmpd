@@ -26,6 +26,7 @@ var DefaultJS = {
 	get_status_timeout: null,
 	volume_bar_locked: false,
 	progress_bar_locked: false,
+	xfade_bar_locked: false,
 	playlist: [],
 	init: function ()
 	{
@@ -57,6 +58,19 @@ var DefaultJS = {
 				DefaultJS.set_volume(ui.value);
 			}
 		});
+		$("#player_xfade_bar").slider({
+			orientation: "vertical",
+			value: 0,
+			min: 0,
+			max: 30,
+			start: function (event, ui) {
+				DefaultJS.xfade_bar_locked = true;
+			},
+			stop: function (event, ui) {
+				DefaultJS.xfade_bar_locked = false;
+				DefaultJS.set_xfade(ui.value);
+			}
+		});
 		$("#player_list_tabs").tabs();
 		$("#player_playlist tbody").sortable({
 			stop: function (event, ui) {
@@ -74,12 +88,16 @@ var DefaultJS = {
 	get_status: function ()
 	{
 		$.getJSON('ajax.py?action=status', function (data) {
-			$("#mpd_xfade").html(data.xfade);
 			/*
 			 * Set volume slider:
 			*/
 			if (!DefaultJS.volume_bar_locked)
 				$("#player_volume_bar").slider("value", parseInt(data.volume));
+			/*
+			 * Set xfade slider:
+			*/
+			if (!DefaultJS.xfade_bar_locked)
+				$("#player_xfade_bar").slider("value", parseInt(data.xfade));
 			/*
 			 * Repeat mode:
 			*/
@@ -267,6 +285,15 @@ var DefaultJS = {
 	{
 		$.get('ajax.py?action=setvol&value=' + value, function (data) {
 			DefaultJS.get_status();
+			DefaultJS.show_status('Volume set to ' + value + '%.');
+		});
+		return true;
+	},
+	set_xfade: function (value)
+	{
+		$.get('ajax.py?action=setxfade&value=' + value, function (data) {
+			DefaultJS.get_status();
+			DefaultJS.show_status('Crossfade set to ' + value + ' sec.');
 		});
 		return true;
 	},

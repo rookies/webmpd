@@ -86,9 +86,17 @@ div#player_statusmessage {
 	padding-left: 50px;
 }
 div#player_volume {
-	
+	float: left;
 }
 div#player_volume_bar {
+	margin: 5px;
+	margin-top: 15px;
+	margin-bottom: 15px;
+}
+div#player_xfade {
+	margin-left: 50px;
+}
+div#player_xfade_bar {
 	margin: 5px;
 	margin-top: 15px;
 	margin-bottom: 15px;

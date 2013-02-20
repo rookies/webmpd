@@ -94,6 +94,15 @@ else:
 			mpd_connect()
 			print(json.dumps(MPD_CLIENT.setvol(value)))
 			mpd_disconnect()
+	elif action == "setxfade":
+		try:
+			value = int(qs["value"][0])
+		except:
+			send_error(102, "Invalid argument!")
+		else:
+			mpd_connect()
+			print(json.dumps(MPD_CLIENT.crossfade(value)))
+			mpd_disconnect()
 	elif action == "seek":
 		try:
 			value = int(qs["value"][0])
