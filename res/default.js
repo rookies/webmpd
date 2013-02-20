@@ -371,7 +371,7 @@ var DefaultJS = {
 			$("#database_table_artists").append('<li><a href="#albums" onclick="return !DefaultJS.get_albums(\'\', true);">ALL ARTISTS</a></li>');
 			for (i=0; i < data.length; i++)
 			{
-				$("#database_table_artists").append('<li><a href="#albums" onclick="return !DefaultJS.get_albums(\'' + data[i].replace("'", "\\'") + '\');">' + data[i] + '</a></li>');
+				$("#database_table_artists").append('<li><a href="#add" onclick="return !DefaultJS.addto_playlist_artist(\'' + data[i].replace("'", "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a><a href="#albums" onclick="return !DefaultJS.get_albums(\'' + data[i].replace("'", "\\'") + '\');">' + data[i] + '</a></li>');
 			}
 		});
 	},
@@ -456,7 +456,7 @@ var DefaultJS = {
 					showtitle = data[i].file;
 				else
 					showtitle = data[i].title;
-				$("#database_table_songs").append('<li><a href="#add" onclick="return !DefaultJS.addto_playlist(\'' + data[i].file.replace("'", "\\'") + '\');">' + showtitle + '</a></li>');
+				$("#database_table_songs").append('<li><a href="#add" onclick="return !DefaultJS.addto_playlist(\'' + data[i].file.replace("'", "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a> ' + showtitle + '</li>');
 			}
 		});
 		return true;
@@ -474,7 +474,18 @@ var DefaultJS = {
 				status = data.artist + ' - ' + data.title;
 			else
 				status = data.file;
-			DefaultJS.show_status(status + ' successfully added to playlist!', "info");
+			DefaultJS.show_status('<em>' + status + '</em> successfully added to playlist!', "info");
+		});
+		return true;
+	},
+	addto_playlist_artist: function (artist)
+	{
+		$.get('ajax.py?action=addartist&artist=' + artist, function (data) {
+			DefaultJS.get_status();
+			/*
+			 * Show status:
+			*/
+			DefaultJS.show_status('All songs of <em>' + artist + '</em> successfully added to playlist!', "info");
 		});
 		return true;
 	},

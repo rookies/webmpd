@@ -217,5 +217,14 @@ else:
 			else:
 				print(json.dumps(res))
 			mpd_disconnect()
+	elif action == "addartist":
+		try:
+			artist = qs["artist"][0]
+		except:
+			send_error(102, "Invalid argument!")
+		else:
+			mpd_connect()
+			print(json.dumps(MPD_CLIENT.findadd("artist", artist)))
+			mpd_disconnect()
 	else:
 		send_error(101, "Invalid action specified!")

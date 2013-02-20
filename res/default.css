@@ -98,3 +98,6 @@ table#database_table td {
 	vertical-align: top;
 	width: 33%;
 }
+table#database_table th {
+	font-size: large;
+}
