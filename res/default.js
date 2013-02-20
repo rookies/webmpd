@@ -3,6 +3,7 @@ var DefaultJS = {
 	get_status_timeout: null,
 	volume_bar_locked: false,
 	progress_bar_locked: false,
+	playlist: [],
 	init: function ()
 	{
 		this.get_status();
@@ -33,6 +34,18 @@ var DefaultJS = {
 			}
 		});
 		$("#player_list_tabs").tabs();
+		$("#player_playlist tbody").sortable({
+			stop: function (event, ui) {
+				/*
+				 * Get the new order and send it to the server!
+				*/
+				$("#player_playlist tbody tr").each(function (pos) {
+					id = parseInt($("td:first", this).html());
+					if (DefaultJS.playlist[pos] != id)
+						DefaultJS.move_playlistitem(id, pos);
+				});
+			}
+		});
 	},
 	get_status: function ()
 	{
@@ -286,6 +299,7 @@ var DefaultJS = {
 		$.getJSON('ajax.py?action=playlist', function (data) {
 			var i;
 			$("#player_playlist tbody tr").remove();
+			DefaultJS.playlist = [];
 			for (i=0; i < data.length; i++)
 			{
 				t = parseInt(data[i].time);
@@ -305,7 +319,8 @@ var DefaultJS = {
 					classes = ' class="playing"';
 				else
 					classes = '';
-				$("#player_playlist tbody").append('<tr' + classes + '><td>' + min + ':' + sec + '</td><td>' + data[i].artist + '</td><td>' + data[i].title + '</td><td>' + data[i].date + '</td><td>' + data[i].album + '</td></tr>');
+				$("#player_playlist tbody").append('<tr' + classes + '><td class="invisible">' + data[i].id + '</td><td>' + min + ':' + sec + '</td><td>' + data[i].artist + '</td><td>' + data[i].title + '</td><td>' + data[i].date + '</td><td>' + data[i].album + '</td></tr>');
+				DefaultJS.playlist.push(parseInt(data[i].id));
 				// data[i]:
 				// {
 				//--  "file": "openmusic/The Sovereigns/Pick It Up!/01 - Pick It Up! (...And Run).mp3",
@@ -320,6 +335,12 @@ var DefaultJS = {
 				//  "pos": "0"
 				// }
 			}
+		});
+	},
+	move_playlistitem: function (id, pos)
+	{
+		$.get('ajax.py?action=moveid&from=' + id + '&to=' + pos, function (data) {
+			DefaultJS.get_status();
 		});
 	}
 }

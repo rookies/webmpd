@@ -63,6 +63,7 @@ print("""<html>
 					<table border="1" id="player_playlist">
 						<thead>
 							<tr>
+								<th class="invisible"></th>
 								<th>Duration</th>
 								<th>Artist</th>
 								<th>Title</th>

@@ -24,6 +24,7 @@ def send_error(code, message):
 		"code": code,
 		"message": message
 	}))
+	sys.exit()
 def mpd_connect():
 	MPD_CLIENT.timeout = config.timeout
 	MPD_CLIENT.idletimeout = config.idletimeout
@@ -67,7 +68,7 @@ else:
 		try:
 			value = int(qs["value"][0])
 		except:
-			send_error(102, "Invalid value!")
+			send_error(102, "Invalid argument!")
 		else:
 			mpd_connect()
 			print(json.dumps(MPD_CLIENT.setvol(value)))
@@ -76,7 +77,7 @@ else:
 		try:
 			value = int(qs["value"][0])
 		except:
-			send_error(102, "Invalid value!")
+			send_error(102, "Invalid argument!")
 		else:
 			mpd_connect()
 			print(json.dumps(MPD_CLIENT.seek(0, value)))
@@ -131,5 +132,19 @@ else:
 		mpd_connect()
 		print(json.dumps(MPD_CLIENT.playlistinfo()))
 		mpd_disconnect()
+	elif action == "moveid":
+		try:
+			fr = int(qs["from"][0])
+		except:
+			send_error(102, "Invalid argument!")
+		else:
+			try:
+				to = int(qs["to"][0])
+			except:
+				send_error(102, "Invalid argument!")
+			else:
+				mpd_connect()
+				print(json.dumps(MPD_CLIENT.moveid(fr, to)))
+				mpd_disconnect()
 	else:
 		send_error(101, "Invalid action specified!")
