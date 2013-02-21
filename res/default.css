@@ -178,4 +178,14 @@ table#search_table td {
 ul#search_results_list li {
 	list-style-image: url('img/audio-x-generic.png');
 	margin-left: 30px;
-} 
+}
+table#stored_playlists_table {
+	width: 100%;
+}
+table#stored_playlists_table td {
+	vertical-align: top;
+	width: 50%;
+}
+table#stored_playlists_table th {
+	font-size: large;
+}

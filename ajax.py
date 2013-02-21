@@ -325,5 +325,18 @@ else:
 			mpd_connect()
 			print(json.dumps(MPD_CLIENT.search(*args)))
 			mpd_disconnect()
+	elif action == "listplaylists":
+		mpd_connect()
+		print(json.dumps(MPD_CLIENT.listplaylists()))
+		mpd_disconnect()
+	elif action == "listplaylistinfo":
+		try:
+			name = qs["name"][0]
+		except:
+			send_error(102, "Invalid argument!")
+		else:
+			mpd_connect()
+			print(json.dumps(MPD_CLIENT.listplaylistinfo(name)))
+			mpd_disconnect()
 	else:
 		send_error(101, "Invalid action specified!")

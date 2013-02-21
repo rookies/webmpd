@@ -85,6 +85,13 @@ var DefaultJS = {
 						// File System
 						DefaultJS.list_filesystem();
 						break;
+					case "player_list_tabs-4":
+						// Search
+						break;
+					case "player_list_tabs-5":
+						// Stored Playlists
+						DefaultJS.list_playlists();
+						break;
 				}
 			}
 		});
@@ -402,19 +409,6 @@ var DefaultJS = {
 					classes = '';
 				$("#player_playlist tbody").append('<tr' + classes + '><td class="invisible">' + data[i].id + '</td><td>' + min + ':' + sec + '</td><td>' + data[i].artist + '</td><td>' + data[i].title + '</td><td>' + data[i].date + '</td><td>' + data[i].album + '</td><td><a href="#remove" onclick="return !DefaultJS.remove_playlistitem(' + data[i].id + ');"><img src="res/img/list-remove.png" width="16" height="16" alt="Remove" title="Remove" /></a> <a href="#play" onclick="return !DefaultJS.play_playlistitem(' + data[i].id + ');"><img src="res/img/media-playback-start-small.png" width="16" height="16" alt="Start playback here" title="Start playback here" /></a></td></tr>');
 				DefaultJS.playlist.push(parseInt(data[i].id));
-				// data[i]:
-				// {
-				//--  "file": "openmusic/The Sovereigns/Pick It Up!/01 - Pick It Up! (...And Run).mp3",
-				//--  "time": "59",
-				//--  "album": "Pick It Up!",
-				//--  "id": "59",
-				//--  "date": "2010",
-				//--  "last-modified": "2010-01-20T15:32:17Z",
-				//--  "title": "Pick It Up! (...And Run)",
-				//  "track": "1/9",
-				//--  "artist": "The Sovereigns",
-				//  "pos": "0"
-				// }
 			}
 		});
 	},
@@ -741,5 +735,35 @@ var DefaultJS = {
 				$("#search_results").removeClass("invisible");
 			};
 		});
+	},
+	list_playlists: function ()
+	{
+		$.getJSON('ajax.py?action=listplaylists', function (data) {
+			var i;
+			$("#stored_playlists li").remove();
+			for (i=0; i < data.length; i++)
+			{
+				$("#stored_playlists").append('<li><a href="#playlistinfo" onclick="return !DefaultJS.list_playlist_items(\'' + data[i].playlist.replace(/'/g, "\\'") + '\');">' + data[i].playlist + '</a></li>');
+			}
+		});
+	},
+	list_playlist_items: function (name)
+	{
+		$.getJSON('ajax.py?action=listplaylistinfo&name=' + name, function (data) {
+			var i;
+			$("#stored_playlists_table_items_header").html('Items (' + name + ')');
+			$("#stored_playlist_items li").remove();
+			for (i=0; i < data.length; i++)
+			{
+				if (data[i].artist != null && data[i].title != null && data[i].album != null)
+					name = data[i].artist + ' - ' + data[i].title + ' (' + data[i].album + ')';
+				else if (data[i].artist != null && data[i].title != null)
+					name = data[i].artist + ' - ' + data[i].title;
+				else
+					name = data[i].file.split('/').pop();
+				$("#stored_playlist_items").append('<li>' + name + '</li>');
+			}
+		});
+		return true;
 	}
 }

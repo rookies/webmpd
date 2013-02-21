@@ -93,6 +93,7 @@ print("""<html>
 					<li><a href="#player_list_tabs-2">Database</a></li>
 					<li><a href="#player_list_tabs-3">File System</a></li>
 					<li><a href="#player_list_tabs-4">Search</a></li>
+					<li><a href="#player_list_tabs-5">Stored Playlists</a></li>
 				</ul>
 				<div id="player_list_tabs-1">
 					<p id="player_playlist_empty" class="invisible">
@@ -207,6 +208,26 @@ print("""<html>
 								<ul id="search_results_list"></ul>
 							</td>
 						</tr>
+					</table>
+				</div>
+				<div id="player_list_tabs-5">
+					<table id="stored_playlists_table">
+						<thead>
+							<tr>
+								<th>Playlists</th>
+								<th id="stored_playlists_table_items_header">Items</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>
+									<ul id="stored_playlists"></ul>
+								</td>
+								<td>
+									<ul id="stored_playlist_items"></ul>
+								</td>
+							</tr>
+						</tbody>
 					</table>
 				</div>
 			</div>
