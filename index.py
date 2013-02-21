@@ -73,13 +73,7 @@ print("""<html>
 			<div id="leftrow_box2">
 				<span class="heading">Search</span>
 				<br />
-				<input type="text" value="Artist" class="field" />
-				<br />
-				<input type="text" value="Album" class="field" />
-				<br />
-				<input type="text" value="Title" class="field" />
-				<br />
-				<input type="text" value="Genre" class="field" />
+				<input type="text" value="Query" class="field" />
 			</div>
 		</div>
 		<div id="rightrow">
@@ -97,6 +91,7 @@ print("""<html>
 					<li><a href="#player_list_tabs-1">Playlist</a></li>
 					<li><a href="#player_list_tabs-2">Database</a></li>
 					<li><a href="#player_list_tabs-3">File System</a></li>
+					<li><a href="#player_list_tabs-4">Search</a></li>
 				</ul>
 				<div id="player_list_tabs-1">
 					<p id="player_playlist_empty" class="invisible">
@@ -146,6 +141,55 @@ print("""<html>
 				</div>
 				<div id="player_list_tabs-3">
 					<ul id="filesystem_list"></ul>
+				</div>
+				<div id="player_list_tabs-4">
+					<table id="advanced_search_form">
+						<tr>
+							<td class="label"><label for="advanced_search_any">Any</label></td>
+							<td><input id="advanced_search_any" type="text" value="" class="field" /></td>
+						</tr>
+						<tr>
+							<td class="label"><label for="advanced_search_artist">Artist</label></td>
+							<td><input id="advanced_search_artist" type="text" value="" class="field" /></td>
+						</tr>
+						<tr>
+							<td class="label"><label for="advanced_search_title">Title</label></td>
+							<td><input id="advanced_search_title" type="text" value="" class="field" /></td>
+						</tr>
+						<tr>
+							<td class="label"><label for="advanced_search_album">Album</label></td>
+							<td><input id="advanced_search_album" type="text" value="" class="field" /></td>
+						</tr>
+						<tr>
+							<td class="label"><label for="advanced_search_filename">Filename</label></td>
+							<td><input id="advanced_search_filename" type="text" value="" class="field" /></td>
+						</tr>
+						<tr>
+							<td class="label"><label for="advanced_search_composer">Composer</label></td>
+							<td><input id="advanced_search_composer" type="text" value="" class="field" /></td>
+						</tr>
+						<tr>
+							<td class="label"><label for="advanced_search_performer">Performer</label></td>
+							<td><input id="advanced_search_performer" type="text" value="" class="field" /></td>
+						</tr>
+						<tr>
+							<td class="label"><label for="advanced_search_genre">Genre</label></td>
+							<td><input id="advanced_search_genre" type="text" value="" class="field" /></td>
+						</tr>
+						<tr>
+							<td class="label"><label for="advanced_search_year">Year</label></td>
+							<td><input id="advanced_search_year" type="text" value="" class="field" /></td>
+						</tr>
+						<tr>
+							<td class="label"><label for="advanced_search_comment">Comment</label></td>
+							<td><input id="advanced_search_comment" type="text" value="" class="field" /></td>
+						</tr>
+						<tr>
+							<td colspan="2">
+								<input id="advanced_search_submit" type="submit" value="Search!" class="submit" />
+							</td>
+						</tr>
+					</table>
 				</div>
 			</div>
 		</div>

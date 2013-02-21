@@ -163,3 +163,13 @@ ul#filesystem_list li.folder {
 ul#filesystem_list li.music {
 	list-style-image: url('img/audio-x-generic.png');
 }
+table#advanced_search_form td.label {
+	text-align: right;
+	padding-right: 5px;
+}
+table#advanced_search_form input.submit {
+	width: 100%;
+}
+table#advanced_search_form input.field {
+
+}
