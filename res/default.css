@@ -61,6 +61,7 @@ div#rightrow {
 	margin-left: 190px;
 	margin-top: 1%;
 	margin-right: 20px;
+	margin-bottom: 1%;
 }
 div#clearrow {
 	clear: left;
@@ -132,6 +133,9 @@ div#player_list_tabs ul.ui-tabs-nav {
 }
 .invisible {
 	display: none;
+}
+table#player_playlist {
+	width: 100%;
 }
 table#player_playlist td,
 table#player_playlist th {
