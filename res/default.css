@@ -132,3 +132,9 @@ table#database_table td {
 table#database_table th {
 	font-size: large;
 }
+ul#filesystem_list li.folder {
+	list-style-image: url('img/folder.png');
+}
+ul#filesystem_list li.music {
+	list-style-image: url('img/audio-x-generic.png');
+}

@@ -32,6 +32,7 @@ var DefaultJS = {
 	{
 		this.get_status();
 		this.get_artists();
+		this.list_filesystem();
 		this.get_status_timeout = window.setTimeout(this.get_status, 1000);
 		$("#player_progress").slider({
 			value: 0,
@@ -47,7 +48,7 @@ var DefaultJS = {
 		});
 		$("#player_volume_bar").slider({
 			orientation: "vertical",
-			value: 100,
+			value: 0,
 			min: 0,
 			max: 100,
 			start: function (event, ui) {
@@ -198,7 +199,19 @@ var DefaultJS = {
 			if (update_songinfo)
 				DefaultJS.get_currentsong();
 			if (update_songinfo || update_playlist)
-				DefaultJS.get_playlist();
+			{
+				if (parseInt(data.playlistlength) == 0)
+				{
+					$("#player_playlist_empty").removeClass("invisible");
+					$("#player_playlist_notempty").addClass("invisible");
+				}
+				else
+				{
+					$("#player_playlist_notempty").removeClass("invisible");
+					$("#player_playlist_empty").addClass("invisible");
+					DefaultJS.get_playlist();
+				};
+			};
 			/*
 			 * Set new timeout:
 			*/
@@ -561,6 +574,7 @@ var DefaultJS = {
 				$("#player_statusmessage").css("background-image", "url('res/img/dialog-information.png')");
 		}
 		$("#player_statusmessage").removeClass("invisible");
+		window.clearTimeout(this.status_timeout);
 		this.status_timeout = window.setTimeout(this.clear_status, timeout);
 	},
 	clear_status: function ()
@@ -572,5 +586,65 @@ var DefaultJS = {
 		$.get('ajax.py?action=playid&id=' + id, function (data) {
 			DefaultJS.get_status();
 		});
+		return true;
+	},
+	clear_playlist: function ()
+	{
+		$.get('ajax.py?action=clear', function (data) {
+			DefaultJS.get_status();
+		});
+		return true;
+	},
+	list_filesystem: function (path)
+	{
+		if (path == null)
+			path = "";
+		$.getJSON('ajax.py?action=ls&path=' + path, function (data) {
+			var i;
+			$("#filesystem_list li").remove();
+			/*
+			 * List .. directory:
+			*/
+			if (path != "")
+			{
+				lastpath = path.split('/');
+				lastpath.pop();
+				lastpath = lastpath.join('/');
+				$("#filesystem_list").append('<li class="folder"><a href="#filesystem" onclick="return !DefaultJS.list_filesystem(\'' + lastpath.replace("'", "\\'") + '\');">..</a></li>');
+			};
+			/*
+			 * List directories:
+			*/
+			directories = [];
+			for (i=0; i < data.length; i++)
+			{
+				if (data[i].directory != null)
+				{
+					directories.push(data[i].directory);
+				};
+			}
+			directories.sort();
+			for (i=0; i < directories.length; i++)
+			{
+				$("#filesystem_list").append('<li class="folder"><a href="#filesystem" onclick="return !DefaultJS.list_filesystem(\'' + directories[i].replace("'", "\\'") + '\');">' + directories[i].split('/').pop() + '</a></li>');
+			}
+			/*
+			 * List files:
+			*/
+			files = [];
+			for (i=0; i < data.length; i++)
+			{
+				if (data[i].file != null)
+				{
+					files.push(data[i].file);
+				};
+			}
+			files.sort();
+			for (i=0; i < files.length; i++)
+			{
+				$("#filesystem_list").append('<li class="music"><a href="#add" onclick="return !DefaultJS.addto_playlist(\'' + files[i].replace("'", "\\'") + '\');">' + files[i].split('/').pop() + '</a></li>');
+			}
+		});
+		return true;
 	}
 }

@@ -86,22 +86,28 @@ print("""<html>
 					<li><a href="#player_list_tabs-3">File System</a></li>
 				</ul>
 				<div id="player_list_tabs-1">
-					<table id="player_playlist">
-						<thead>
-							<tr>
-								<th class="invisible"></th>
-								<th>Duration</th>
-								<th>Artist</th>
-								<th>Title</th>
-								<th>Year</th>
-								<th>Album</th>
-								<th>Actions</th>
-							</tr>
-						</thead>
-						<tbody>
-							
-						</tbody>
-					</table>
+					<p id="player_playlist_empty" class="invisible">
+						The playlist is empty.
+					</p>
+					<div id="player_playlist_notempty" class="invisible">
+						<a href="#clear" onclick="return !DefaultJS.clear_playlist();"><img src="res/img/edit-clear.png" width="32" height="32" alt="Clear playlist" title="Clear playlist" /></a>
+						<table id="player_playlist">
+							<thead>
+								<tr>
+									<th class="invisible"></th>
+									<th>Duration</th>
+									<th>Artist</th>
+									<th>Title</th>
+									<th>Year</th>
+									<th>Album</th>
+									<th>Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								
+							</tbody>
+						</table>
+					</div>
 				</div>
 				<div id="player_list_tabs-2">
 					<table id="database_table">
@@ -125,7 +131,9 @@ print("""<html>
 						</tbody>
 					</table>
 				</div>
-				<div id="player_list_tabs-3"></div>
+				<div id="player_list_tabs-3">
+					<ul id="filesystem_list"></ul>
+				</div>
 			</div>
 		</div>
 		<div id="clearrow"></div>

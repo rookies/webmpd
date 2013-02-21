@@ -270,5 +270,27 @@ else:
 			mpd_connect()
 			print(json.dumps(MPD_CLIENT.playid(id_)))
 			mpd_disconnect()
+	elif action == "clear":
+		mpd_connect()
+		print(json.dumps(MPD_CLIENT.clear()))
+		mpd_disconnect()
+	elif action == "ls":
+		try:
+			path = qs["path"][0]
+		except:
+			send_error(102, "Invalid argument!")
+		else:
+			mpd_connect()
+			try:
+				res = MPD_CLIENT.lsinfo(path)
+			except mpd.CommandError:
+				print(json.dumps([]))
+			else:
+				res2 = []
+				for item in res:
+					if "directory" in item or "file" in item:
+						res2.append(item)
+				print(json.dumps(res2))
+			mpd_disconnect()
 	else:
 		send_error(101, "Invalid action specified!")
