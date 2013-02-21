@@ -308,5 +308,22 @@ else:
 						res2.append(item)
 				print(json.dumps(res2))
 			mpd_disconnect()
+	elif action == "search":
+		arg_keys = [ "any", "artist", "title", "album", "file", "composer", "performer", "genre", "date", "comment"]
+		args = []
+		for key in arg_keys:
+			try:
+				arg = qs[key][0]
+				assert(arg != "")
+			except:
+				pass
+			else:
+				args.extend([key, arg])
+		if len(args) is 0:
+			print(json.dumps([]))
+		else:
+			mpd_connect()
+			print(json.dumps(MPD_CLIENT.search(*args)))
+			mpd_disconnect()
 	else:
 		send_error(101, "Invalid action specified!")

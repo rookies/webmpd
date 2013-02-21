@@ -450,7 +450,7 @@ var DefaultJS = {
 			data.sort();
 			for (i=0; i < data.length; i++)
 			{
-				$("#database_table_artists").append('<li><a href="#add" onclick="return !DefaultJS.addto_playlist_artist(\'' + data[i].replace("'", "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a><a href="#albums" onclick="return !DefaultJS.get_albums(\'' + data[i].replace("'", "\\'") + '\', false);">' + data[i] + '</a></li>');
+				$("#database_table_artists").append('<li><a href="#add" onclick="return !DefaultJS.addto_playlist_artist(\'' + data[i].replace(/'/g, "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a><a href="#albums" onclick="return !DefaultJS.get_albums(\'' + data[i].replace(/'/g, "\\'") + '\', false);">' + data[i] + '</a></li>');
 			}
 		});
 	},
@@ -474,7 +474,7 @@ var DefaultJS = {
 			if (all == true)
 				$("#database_table_albums").append('<li><a href="#songs" onclick="return !DefaultJS.get_songs(\'\', \'\', false, true);">ALL SONGS</a></li>');
 			else
-				$("#database_table_albums").append('<li><a href="#songs" onclick="return !DefaultJS.get_songs(\'' + artist.replace("'", "\\'") + '\', \'\', true, false);">ALL SONGS</a></li>');
+				$("#database_table_albums").append('<li><a href="#songs" onclick="return !DefaultJS.get_songs(\'' + artist.replace(/'/g, "\\'") + '\', \'\', true, false);">ALL SONGS</a></li>');
 			data.sort();
 			for (i=0; i < data.length; i++)
 			{
@@ -483,7 +483,7 @@ var DefaultJS = {
 					if (all == true)
 						$("#database_table_albums").append('<li><a href="#add" onclick="return !DefaultJS.addto_playlist_album(\'\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a><a href="#songs" onclick="return !DefaultJS.get_songs(\'\', \'\', false, false);">[Unknown album]</a></li>');
 					else
-						$("#database_table_albums").append('<li><a href="#add" onclick="return !DefaultJS.addto_playlist_album(\'\', \'' + artist.replace("'", "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a><a href="#songs" onclick="return !DefaultJS.get_songs(\'' + artist.replace("'", "\\'") + '\', \'\', false, false);">[Unknown album]</a></li>');
+						$("#database_table_albums").append('<li><a href="#add" onclick="return !DefaultJS.addto_playlist_album(\'\', \'' + artist.replace(/'/g, "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a><a href="#songs" onclick="return !DefaultJS.get_songs(\'' + artist.replace(/'/g, "\\'") + '\', \'\', false, false);">[Unknown album]</a></li>');
 					break;
 				};
 			}
@@ -492,9 +492,9 @@ var DefaultJS = {
 				if (data[i] != "")
 				{
 					if (all == true)
-						$("#database_table_albums").append('<li><a href="#add" onclick="return !DefaultJS.addto_playlist_album(\'' + data[i].replace("'", "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a><a href="#songs" onclick="return !DefaultJS.get_songs(\'\', \'' + data[i].replace("'", "\\'") + '\', false, false);">' + data[i] + '</a></li>');
+						$("#database_table_albums").append('<li><a href="#add" onclick="return !DefaultJS.addto_playlist_album(\'' + data[i].replace(/'/g, "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a><a href="#songs" onclick="return !DefaultJS.get_songs(\'\', \'' + data[i].replace(/'/g, "\\'") + '\', false, false);">' + data[i] + '</a></li>');
 					else
-						$("#database_table_albums").append('<li><a href="#add" onclick="return !DefaultJS.addto_playlist_album(\'' + data[i].replace("'", "\\'") + '\', \'' + artist.replace("'", "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a><a href="#songs" onclick="return !DefaultJS.get_songs(\'' + artist.replace("'", "\\'") + '\', \'' + data[i].replace("'", "\\'") + '\', false, false);">' + data[i] + '</a></li>');
+						$("#database_table_albums").append('<li><a href="#add" onclick="return !DefaultJS.addto_playlist_album(\'' + data[i].replace(/'/g, "\\'") + '\', \'' + artist.replace(/'/g, "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a><a href="#songs" onclick="return !DefaultJS.get_songs(\'' + artist.replace(/'/g, "\\'") + '\', \'' + data[i].replace(/'/g, "\\'") + '\', false, false);">' + data[i] + '</a></li>');
 				};
 			}
 		});
@@ -536,7 +536,7 @@ var DefaultJS = {
 					showtitle = data[i].file;
 				else
 					showtitle = data[i].title;
-				$("#database_table_songs").append('<li><a href="#add" onclick="return !DefaultJS.addto_playlist(\'' + data[i].file.replace("'", "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a> ' + showtitle + '</li>');
+				$("#database_table_songs").append('<li><a href="#add" onclick="return !DefaultJS.addto_playlist(\'' + data[i].file.replace(/'/g, "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a> ' + showtitle + '</li>');
 			}
 		});
 		return true;
@@ -644,7 +644,7 @@ var DefaultJS = {
 				lastpath = path.split('/');
 				lastpath.pop();
 				lastpath = lastpath.join('/');
-				$("#filesystem_list").append('<li class="folder"><a href="#filesystem" onclick="return !DefaultJS.list_filesystem(\'' + lastpath.replace("'", "\\'") + '\');">..</a></li>');
+				$("#filesystem_list").append('<li class="folder"><a href="#filesystem" onclick="return !DefaultJS.list_filesystem(\'' + lastpath.replace(/'/g, "\\'") + '\');">..</a></li>');
 			};
 			/*
 			 * List directories:
@@ -660,7 +660,7 @@ var DefaultJS = {
 			directories.sort();
 			for (i=0; i < directories.length; i++)
 			{
-				$("#filesystem_list").append('<li class="folder"><a href="#filesystem" onclick="return !DefaultJS.list_filesystem(\'' + directories[i].replace("'", "\\'") + '\');">' + directories[i].split('/').pop() + '</a></li>');
+				$("#filesystem_list").append('<li class="folder"><a href="#filesystem" onclick="return !DefaultJS.list_filesystem(\'' + directories[i].replace(/'/g, "\\'") + '\');">' + directories[i].split('/').pop() + '</a></li>');
 			}
 			/*
 			 * List files:
@@ -676,9 +676,70 @@ var DefaultJS = {
 			files.sort();
 			for (i=0; i < files.length; i++)
 			{
-				$("#filesystem_list").append('<li class="music"><a href="#add" onclick="return !DefaultJS.addto_playlist(\'' + files[i].replace("'", "\\'") + '\');">' + files[i].split('/').pop() + '</a></li>');
+				$("#filesystem_list").append('<li class="music"><a href="#add" onclick="return !DefaultJS.addto_playlist(\'' + files[i].replace(/'/g, "\\'") + '\');">' + files[i].split('/').pop() + '</a></li>');
 			}
 		});
 		return true;
+	},
+	normal_search: function ()
+	{
+		/*
+		 * Fill the 'any' field of the advanced search form:
+		*/
+		$("#advanced_search_any").prop('value', $("#search_query").prop('value'));
+		/*
+		 * Clear the field of the normal search form:
+		*/
+		$("#search_query").prop('value', 'Query');
+		$("#search_query").css('color', 'grey');
+		/*
+		 * Go to the search tab:
+		*/
+		$("#player_list_tabs").tabs("option", "active", 3);
+		/*
+		 * Submit the advanced search form:
+		*/
+		$("#advanced_search_submit").click();
+	},
+	advanced_search: function ()
+	{
+		$.getJSON('ajax.py?action=search&any=' + $("#advanced_search_any").prop('value') + '&artist=' + $("#advanced_search_artist").prop('value') + '&title=' + $("#advanced_search_title").prop('value') + '&album=' + $("#advanced_search_album").prop('value') + '&file=' + $("#advanced_search_filename").prop('value') + '&composer=' + $("#advanced_search_composer").prop('value') + '&performer=' + $("#advanced_search_performer").prop('value') + '&genre=' + $("#advanced_search_genre").prop('value') + '&date=' + $("#advanced_search_year").prop('value') + '&comment=' + $("#advanced_search_comment").prop('value'), function (data) {
+			if (data.length == 0)
+			{
+				/*
+				 * Show the right column:
+				*/
+				$("#search_results_nosearch").addClass("invisible");
+				$("#search_results_noresults").removeClass("invisible");
+				$("#search_results").addClass("invisible");
+			}
+			else
+			{
+				var i;
+				/*
+				 * Clean up:
+				*/
+				$("#search_results_list li").remove();
+				/*
+				 * Add results:
+				*/
+				for (i=0; i < data.length; i++)
+				{
+					if (data[i].artist != null && data[i].title != null && data[i].album != null)
+						name = data[i].artist + ' - ' + data[i].title + ' (' + data[i].album + ')';
+					else if (data[i].artist != null && data[i].title != null)
+						name = data[i].artist + ' - ' + data[i].title;
+					else
+						name = data[i].file.split('/').pop();
+					$("#search_results_list").append('<li><a href="#add" onclick="return !DefaultJS.addto_playlist(\'' + data[i].file.replace(/'/g, "\\'") + '\');">' + name + '</a></li>');
+				}
+				/*
+				 * Show the right column:
+				*/
+				$("#search_results_nosearch").addClass("invisible");
+				$("#search_results_noresults").addClass("invisible");
+				$("#search_results").removeClass("invisible");
+			};
+		});
 	}
 }

@@ -53,7 +53,6 @@ div#leftrow_box2 input.field {
 	border-radius: 5px;
 	padding: 5px;
 	margin: 3px;
-	color: grey;
 }
 div#leftrow_box2 span.heading {
 	font-size: large;
@@ -173,3 +172,10 @@ table#advanced_search_form input.submit {
 table#advanced_search_form input.field {
 
 }
+table#search_table td {
+	vertical-align: top;
+}
+ul#search_results_list li {
+	list-style-image: url('img/audio-x-generic.png');
+	margin-left: 30px;
+} 

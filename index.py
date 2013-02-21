@@ -73,7 +73,8 @@ print("""<html>
 			<div id="leftrow_box2">
 				<span class="heading">Search</span>
 				<br />
-				<input type="text" value="Query" class="field" />
+				<input style="color: grey;" type="text" value="Query" class="field" onfocus="if ($(this).prop('value') == 'Query') { $(this).prop('value', ''); $(this).css('color', 'black'); }" onblur="if ($(this).prop('value') == '') { $(this).prop('value', 'Query'); $(this).css('color', 'grey'); }" id="search_query" />
+				<input type="submit" value="Search!" class="field" onclick="DefaultJS.normal_search();" />
 			</div>
 		</div>
 		<div id="rightrow">
@@ -120,9 +121,11 @@ print("""<html>
 				<div id="player_list_tabs-2">
 					<table id="database_table">
 						<thead>
-							<th>Artists</th>
-							<th id="database_table_albums_header">Albums</th>
-							<th id="database_table_songs_header">Songs</th>
+							<tr>
+								<th>Artists</th>
+								<th id="database_table_albums_header">Albums</th>
+								<th id="database_table_songs_header">Songs</th>
+							</tr>
 						</thead>
 						<tbody>
 							<tr>
@@ -143,50 +146,65 @@ print("""<html>
 					<ul id="filesystem_list"></ul>
 				</div>
 				<div id="player_list_tabs-4">
-					<table id="advanced_search_form">
+					<table id="search_table">
 						<tr>
-							<td class="label"><label for="advanced_search_any">Any</label></td>
-							<td><input id="advanced_search_any" type="text" value="" class="field" /></td>
-						</tr>
-						<tr>
-							<td class="label"><label for="advanced_search_artist">Artist</label></td>
-							<td><input id="advanced_search_artist" type="text" value="" class="field" /></td>
-						</tr>
-						<tr>
-							<td class="label"><label for="advanced_search_title">Title</label></td>
-							<td><input id="advanced_search_title" type="text" value="" class="field" /></td>
-						</tr>
-						<tr>
-							<td class="label"><label for="advanced_search_album">Album</label></td>
-							<td><input id="advanced_search_album" type="text" value="" class="field" /></td>
-						</tr>
-						<tr>
-							<td class="label"><label for="advanced_search_filename">Filename</label></td>
-							<td><input id="advanced_search_filename" type="text" value="" class="field" /></td>
-						</tr>
-						<tr>
-							<td class="label"><label for="advanced_search_composer">Composer</label></td>
-							<td><input id="advanced_search_composer" type="text" value="" class="field" /></td>
-						</tr>
-						<tr>
-							<td class="label"><label for="advanced_search_performer">Performer</label></td>
-							<td><input id="advanced_search_performer" type="text" value="" class="field" /></td>
-						</tr>
-						<tr>
-							<td class="label"><label for="advanced_search_genre">Genre</label></td>
-							<td><input id="advanced_search_genre" type="text" value="" class="field" /></td>
-						</tr>
-						<tr>
-							<td class="label"><label for="advanced_search_year">Year</label></td>
-							<td><input id="advanced_search_year" type="text" value="" class="field" /></td>
-						</tr>
-						<tr>
-							<td class="label"><label for="advanced_search_comment">Comment</label></td>
-							<td><input id="advanced_search_comment" type="text" value="" class="field" /></td>
-						</tr>
-						<tr>
-							<td colspan="2">
-								<input id="advanced_search_submit" type="submit" value="Search!" class="submit" />
+							<td>
+								<table id="advanced_search_form">
+									<tr>
+										<td class="label"><label for="advanced_search_any">Any</label></td>
+										<td><input id="advanced_search_any" type="text" value="" class="field" /></td>
+									</tr>
+									<tr>
+										<td class="label"><label for="advanced_search_artist">Artist</label></td>
+										<td><input id="advanced_search_artist" type="text" value="" class="field" /></td>
+									</tr>
+									<tr>
+										<td class="label"><label for="advanced_search_title">Title</label></td>
+										<td><input id="advanced_search_title" type="text" value="" class="field" /></td>
+									</tr>
+									<tr>
+										<td class="label"><label for="advanced_search_album">Album</label></td>
+										<td><input id="advanced_search_album" type="text" value="" class="field" /></td>
+									</tr>
+									<tr>
+										<td class="label"><label for="advanced_search_filename">Filename</label></td>
+										<td><input id="advanced_search_filename" type="text" value="" class="field" /></td>
+									</tr>
+									<tr>
+										<td class="label"><label for="advanced_search_composer">Composer</label></td>
+										<td><input id="advanced_search_composer" type="text" value="" class="field" /></td>
+									</tr>
+									<tr>
+										<td class="label"><label for="advanced_search_performer">Performer</label></td>
+										<td><input id="advanced_search_performer" type="text" value="" class="field" /></td>
+									</tr>
+									<tr>
+										<td class="label"><label for="advanced_search_genre">Genre</label></td>
+										<td><input id="advanced_search_genre" type="text" value="" class="field" /></td>
+									</tr>
+									<tr>
+										<td class="label"><label for="advanced_search_year">Year</label></td>
+										<td><input id="advanced_search_year" type="text" value="" class="field" /></td>
+									</tr>
+									<tr>
+										<td class="label"><label for="advanced_search_comment">Comment</label></td>
+										<td><input id="advanced_search_comment" type="text" value="" class="field" /></td>
+									</tr>
+									<tr>
+										<td colspan="2">
+											<input id="advanced_search_submit" type="submit" value="Search!" class="submit" onclick="DefaultJS.advanced_search();" />
+										</td>
+									</tr>
+								</table>
+							</td>
+							<td id="search_results_nosearch">
+								Please enter a search query.
+							</td>
+							<td id="search_results_noresults" class="invisible">
+								No results found. Please enter another search query.
+							</td>
+							<td id="search_results" class="invisible">
+								<ul id="search_results_list"></ul>
 							</td>
 						</tr>
 					</table>
