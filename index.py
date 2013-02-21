@@ -50,23 +50,36 @@ print("""<html>
 	</head>
 	<body onload="DefaultJS.init();">
 		<div id="leftrow">
-			<div id="player_controls">
-				<a href="#backward" onclick="return !DefaultJS.go_prev();"><img src="res/img/media-skip-backward.png" alt="Skip backward" height="32" width="32" /></a><a href="#stop" onclick="return !DefaultJS.stop();"><img src="res/img/media-playback-stop.png" alt="Stop" height="32" width="32" /></a><a href="#play" onclick="return !DefaultJS.play();" id="player_play"><img src="res/img/media-playback-start.png" alt="Play" height="32" width="32" /></a><a href="#pause" onclick="return !DefaultJS.pause();" id="player_pause" class="invisible"><img src="res/img/media-playback-pause.png" alt="Pause" height="32" width="32" /></a><a href="#forward" onclick="return !DefaultJS.go_next();"><img src="res/img/media-skip-forward.png" alt="Skip forward" height="32" width="32" /></a>
+			<div id="leftrow_box1">
+				<div id="player_controls">
+					<a href="#backward" onclick="return !DefaultJS.go_prev();"><img src="res/img/media-skip-backward.png" alt="Skip backward" height="32" width="32" /></a><a href="#stop" onclick="return !DefaultJS.stop();"><img src="res/img/media-playback-stop.png" alt="Stop" height="32" width="32" /></a><a href="#play" onclick="return !DefaultJS.play();" id="player_play"><img src="res/img/media-playback-start.png" alt="Play" height="32" width="32" /></a><a href="#pause" onclick="return !DefaultJS.pause();" id="player_pause" class="invisible"><img src="res/img/media-playback-pause.png" alt="Pause" height="32" width="32" /></a><a href="#forward" onclick="return !DefaultJS.go_next();"><img src="res/img/media-skip-forward.png" alt="Skip forward" height="32" width="32" /></a>
+				</div>
+				<input type="checkbox" id="player_repeat" onchange="DefaultJS.update_modifiers();" /> <label for="player_repeat">repeat</label><br />
+				<input type="checkbox" id="player_random" onchange="DefaultJS.update_modifiers();" /> <label for="player_random">random</label><br />
+				<input type="checkbox" id="player_single" onchange="DefaultJS.update_modifiers();" /> <label for="player_single">single</label><br />
+				<input type="checkbox" id="player_consume" onchange="DefaultJS.update_modifiers();" /> <label for="player_consume">consume</label>
+				<br />
+				<div id="player_volume">
+					<img src="res/img/audio-volume-high.png" title="Set volume to 100%" alt="Full volume" height="32" width="32" />
+					<div id="player_volume_bar"></div>
+					<img src="res/img/audio-volume-muted.png" title="Mute sound" alt="Muted" height="32" width="32" />
+				</div>
+				<div id="player_xfade">
+					<img src="res/img/list-add-big.png" title="Set Crossfade to 30 sec" alt="Full XFade" height="32" width="32" />
+					<div id="player_xfade_bar"></div>
+					<img src="res/img/list-remove-big.png" title="Disable Crossfade" alt="No XFade" height="32" width="32" />
+				</div>
 			</div>
-			<input type="checkbox" id="player_repeat" onchange="DefaultJS.update_modifiers();" /> <label for="player_repeat">repeat</label><br />
-			<input type="checkbox" id="player_random" onchange="DefaultJS.update_modifiers();" /> <label for="player_random">random</label><br />
-			<input type="checkbox" id="player_single" onchange="DefaultJS.update_modifiers();" /> <label for="player_single">single</label><br />
-			<input type="checkbox" id="player_consume" onchange="DefaultJS.update_modifiers();" /> <label for="player_consume">consume</label>
-			<br />
-			<div id="player_volume">
-				<img src="res/img/audio-volume-high.png" title="Set volume to 100%" alt="Full volume" height="32" width="32" />
-				<div id="player_volume_bar"></div>
-				<img src="res/img/audio-volume-muted.png" title="Mute sound" alt="Muted" height="32" width="32" />
-			</div>
-			<div id="player_xfade">
-				<img src="res/img/list-add-big.png" title="Set Crossfade to 30 sec" alt="Full XFade" height="32" width="32" />
-				<div id="player_xfade_bar"></div>
-				<img src="res/img/list-remove-big.png" title="Disable Crossfade" alt="No XFade" height="32" width="32" />
+			<div id="leftrow_box2">
+				<span class="heading">Search</span>
+				<br />
+				<input type="text" value="Artist" class="field" />
+				<br />
+				<input type="text" value="Album" class="field" />
+				<br />
+				<input type="text" value="Title" class="field" />
+				<br />
+				<input type="text" value="Genre" class="field" />
 			</div>
 		</div>
 		<div id="rightrow">
