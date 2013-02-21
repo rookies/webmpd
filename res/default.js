@@ -31,8 +31,6 @@ var DefaultJS = {
 	init: function ()
 	{
 		this.get_status();
-		this.get_artists();
-		this.list_filesystem();
 		this.get_status_timeout = window.setTimeout(this.get_status, 1000);
 		$("#player_progress").slider({
 			value: 0,
@@ -72,7 +70,24 @@ var DefaultJS = {
 				DefaultJS.set_xfade(ui.value);
 			}
 		});
-		$("#player_list_tabs").tabs();
+		$("#player_list_tabs").tabs({
+			beforeActivate: function (event, ui) {
+				switch (ui.newPanel.prop("id"))
+				{
+					case "player_list_tabs-1":
+						// Playlist
+						break;
+					case "player_list_tabs-2":
+						// Database
+						DefaultJS.get_artists();
+						break;
+					case "player_list_tabs-3":
+						// File System
+						DefaultJS.list_filesystem();
+						break;
+				}
+			}
+		});
 		$("#player_playlist tbody").sortable({
 			stop: function (event, ui) {
 				/*
