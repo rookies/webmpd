@@ -27,6 +27,7 @@ var DefaultJS = {
 	volume_bar_locked: false,
 	progress_bar_locked: false,
 	xfade_bar_locked: false,
+	first_statuscheck: true,
 	playlist: [],
 	init: function ()
 	{
@@ -124,31 +125,63 @@ var DefaultJS = {
 			/*
 			 * Repeat mode:
 			*/
-			if (data.repeat == '1')
+			if (data.repeat == '1' && document.getElementById("player_repeat").checked == false)
+			{
 				document.getElementById("player_repeat").checked = true;
-			else
+				if (!DefaultJS.first_statuscheck)
+					DefaultJS.show_status('Activated repeat mode by remote client.');
+			}
+			else if (data.repeat == '0' && document.getElementById("player_repeat").checked == true)
+			{
 				document.getElementById("player_repeat").checked = false;
+				if (!DefaultJS.first_statuscheck)
+					DefaultJS.show_status('Deactivated repeat mode by remote client.');
+			};
 			/*
 			 * Random mode:
 			*/
-			if (data.random == '1')
+			if (data.random == '1' && document.getElementById("player_random").checked == false)
+			{
 				document.getElementById("player_random").checked = true;
-			else
+				if (!DefaultJS.first_statuscheck)
+					DefaultJS.show_status('Activated random mode by remote client.');
+			}
+			else if (data.random == '0' && document.getElementById("player_random").checked == true)
+			{
 				document.getElementById("player_random").checked = false;
+				if (!DefaultJS.first_statuscheck)
+					DefaultJS.show_status('Deactivated random mode by remote client.');
+			};
 			/*
 			 * Single mode:
 			*/
-			if (data.single == '1')
+			if (data.single == '1' && document.getElementById("player_single").checked == false)
+			{
 				document.getElementById("player_single").checked = true;
-			else
+				if (!DefaultJS.first_statuscheck)
+					DefaultJS.show_status('Activated single mode by remote client.');
+			}
+			else if (data.single == '0' && document.getElementById("player_single").checked == true)
+			{
 				document.getElementById("player_single").checked = false;
+				if (!DefaultJS.first_statuscheck)
+					DefaultJS.show_status('Deactivated single mode by remote client.');
+			};
 			/*
 			 * Consume mode:
 			*/
-			if (data.consume == '1')
+			if (data.consume == '1' && document.getElementById("player_consume").checked == false)
+			{
 				document.getElementById("player_consume").checked = true;
-			else
+				if (!DefaultJS.first_statuscheck)
+					DefaultJS.show_status('Activated consume mode by remote client.');
+			}
+			else if (data.consume == '0' && document.getElementById("player_consume").checked == true)
+			{
 				document.getElementById("player_consume").checked = false;
+				if (!DefaultJS.first_statuscheck)
+					DefaultJS.show_status('Deactivated consume mode by remote client.');
+			};
 			/*
 			 * Play / pause icon:
 			*/
@@ -239,6 +272,10 @@ var DefaultJS = {
 			*/
 			window.clearTimeout(DefaultJS.get_status_timeout);
 			DefaultJS.get_status_timeout = window.setTimeout(DefaultJS.get_status, 1000);
+			/*
+			 * Set first_statuscheck variable:
+			*/
+			DefaultJS.first_statuscheck = false;
 		});
 	},
 	get_currentsong: function ()
@@ -377,6 +414,7 @@ var DefaultJS = {
 			consume = 0;
 		$.get('ajax.py?action=update_modifiers&repeat=' + repeat + '&random=' + random + '&single=' + single + '&consume=' + consume, function (data) {
 			DefaultJS.get_status();
+			DefaultJS.show_status('Updated playback modifiers! Repeat=' + repeat + ' Random=' + random + ' Single=' + single + ' Consume=' + consume);
 		});
 		return true;
 	},
