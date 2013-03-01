@@ -347,5 +347,14 @@ else:
 			mpd_connect()
 			print(json.dumps(MPD_CLIENT.load(name)))
 			mpd_disconnect()
+	elif action == "rm":
+		try:
+			name = qs["name"][0]
+		except:
+			send_error(102, "Invalid argument!")
+		else:
+			mpd_connect()
+			print(json.dumps(MPD_CLIENT.rm(name)))
+			mpd_disconnect()
 	else:
 		send_error(101, "Invalid action specified!")

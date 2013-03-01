@@ -781,7 +781,7 @@ var DefaultJS = {
 			$("#stored_playlists li").remove();
 			for (i=0; i < data.length; i++)
 			{
-				$("#stored_playlists").append('<li><a href="#load" onclick="return !DefaultJS.load_stored(\'' + data[i].playlist.replace(/'/g, "\\'") + '\');"><img src="res/img/list-add.png" alt="Add" width="16" height="16" /></a> <a href="#playlistinfo" onclick="return !DefaultJS.list_playlist_items(\'' + data[i].playlist.replace(/'/g, "\\'") + '\');">' + data[i].playlist + '</a></li>');
+				$("#stored_playlists").append('<li><a href="#load" onclick="return !DefaultJS.load_stored(\'' + data[i].playlist.replace(/'/g, "\\'") + '\');"><img src="res/img/list-add.png" alt="Add" title="Add to playlist" width="16" height="16" /></a> <a href="#rm" onclick="return !DefaultJS.rm_stored(\'' + data[i].playlist.replace(/'/g, "\\'") + '\');"><img src="res/img/list-remove.png" alt="Remove" title="Remove stored playlist" width="16" height="16" /></a> <a href="#playlistinfo" onclick="return !DefaultJS.list_playlist_items(\'' + data[i].playlist.replace(/'/g, "\\'") + '\');">' + data[i].playlist + '</a></li>');
 			}
 		});
 	},
@@ -809,6 +809,16 @@ var DefaultJS = {
 		$.get('ajax.py?action=load&name=' + name, function (data) {
 			DefaultJS.get_status();
 			DefaultJS.show_status('All songs of the stored playlist <em>' + name + '</em> successfully added to playlist!');
+		});
+		return true;
+	},
+	rm_stored: function (name)
+	{
+		$.get('ajax.py?action=rm&name=' + name, function (data) {
+			$("#stored_playlists_table_items_header").html('Items');
+			$("#stored_playlist_items li").remove();
+			DefaultJS.list_playlists();
+			DefaultJS.show_status('Successfully deleted the stored playlist <em>' + name + '</em>!');
 		});
 		return true;
 	}
