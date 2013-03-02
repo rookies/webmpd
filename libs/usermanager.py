@@ -142,12 +142,13 @@ def login (username, password):
 	return False
 
 def get_permission (name):
+	permissions = get_permissions()
 	if name.find(".") == -1:
-		if GUEST_PERMISSIONS[name]:
+		if permissions[name]:
 			return True
 	else:
 		n = name.split(".")
-		perm = GUEST_PERMISSIONS
+		perm = permissions
 		for i in n:
 			perm = perm[i]
 		if perm:
