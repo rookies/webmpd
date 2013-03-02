@@ -35,38 +35,10 @@ import json, os, urllib.parse, sys
 ## IMPORT DELIVERED LIBRARIES:
 import libs.config as config
 import libs.mpd as mpd
+import libs.usermanager as usermanager
 
 ## GLOBAL VARIABLES:
 MPD_CLIENT = mpd.MPDClient()
-GUEST_PERMISSIONS = {
-	"playback": {
-		"view": True,
-		"control": False,
-		"change_options": False
-	},
-	"playlist": {
-		"change": False,
-		"clear": False,
-		"add": {
-			"file": False,
-			"artist": False,
-			"album": False
-		}
-	},
-	"database": {
-		"view": True
-	},
-	"filesystem": {
-		"view": True
-	},
-	"search": True,
-	"stored_playlists": {
-		"view": True,
-		"load": False,
-		"remove": False
-	}
-}
-PERMISSIONS = GUEST_PERMISSIONS
 ## DEFINE FUNCTIONS:
 def send_error(code, message):
 	print(json.dumps({
@@ -84,27 +56,21 @@ def mpd_connect():
 def mpd_disconnect():
 	MPD_CLIENT.close()
 def check_permission(name):
-	if name.find(".") == -1:
-		if PERMISSIONS[name]:
-			return True
-	else:
-		n = name.split(".")
-		perm = PERMISSIONS
-		for i in n:
-			perm = perm[i]
-		if perm:
-			return True
-	send_error(201, "Action not allowed! You need permission %s!" % name)
+	if usermanager.get_permission(name):
+		return True
+	send_error(201, "Action not allowed! You need permission '%s'!" % name)
 	return False
 ## PARSE QUERY STRING:
 qs = urllib.parse.parse_qs(os.getenv("QUERY_STRING"), keep_blank_values=True)
+## CHECK ACCESS PERMISSION:
+check_permission("access")
 ## CHECK ACTION ARGUMENT:
 if not "action" in qs:
 	send_error(100, "No action specified!")
 else:
 	action = qs["action"][0]
 	if action == "permissions":
-		print(json.dumps(PERMISSIONS))
+		print(json.dumps(usermanager.get_permissions()))
 	elif action == "currentsong":
 		check_permission("playback.view")
 		mpd_connect()

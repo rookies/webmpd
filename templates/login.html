@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<title>WebMPD: Login</title>
+		<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+		<link rel="stylesheet" type="text/css" href="res/login.css" />
+	</head>
+	<body>
+		<div id="content">
+			{% if error %}<div id="error">Login failed! Are username and password correct?</div>{% endif %}
+			<h1>WebMPD: Login</h1>
+			<div id="login">
+				<form action="?page=loginaction" method="post">
+					<table>
+						<tr>
+							<td>
+								<label for="login_username">Username:</label>
+							</td>
+							<td>
+								<input id="login_username" type="text" name="username" />
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label for="login_password">Password:</label>
+							</td>
+							<td>
+								<input id="login_password" type="password" name="password" />
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2">
+								<input id="login_submit" type="submit" value="Login!" name="submit" />
+							</td>
+						</tr>
+					</table>
+				</form>
+			</div>
+		</div>
+	</body>
+</html>

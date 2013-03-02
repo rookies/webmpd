@@ -1,5 +1,6 @@
 ---
 	permissions
+access
 playback.view
 	currentsong
 	status

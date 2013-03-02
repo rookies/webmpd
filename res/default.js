@@ -125,9 +125,7 @@ var DefaultJS = {
 			{
 				DefaultJS.get_status();
 				DefaultJS.get_status_timeout = window.setTimeout(DefaultJS.get_status, 1000);
-			}
-			else
-				alert("You don't have the permissions to see this page!");
+			};
 			/*
 			 * playback.control
 			*/
