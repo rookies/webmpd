@@ -189,7 +189,16 @@ def get_permissions ():
 				permissions[key] = (val==1)
 		else:
 			key = key.split(".")
-			## TODO
+			if len(key) == 2:
+				if key[1] == "*":
+					permissions[key[0]] = set_permissions_recursively(permissions[key[0]], (val==1))
+				else:
+					permissions[key[0]][key[1]] = (val==1)
+			elif len(key) == 3:
+				if key[2] == "*":
+					permissions[key[0]][key[1]] = set_permissions_recursively(permissions[key[0]][key[1]], (val==1))
+				else:
+					permissions[key[0]][key[1]][key[2]] = (val==1)
 	return permissions
 
 def set_permissions_recursively (permissions, value):
