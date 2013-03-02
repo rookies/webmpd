@@ -72,3 +72,35 @@ salt = "-1Znnq1%z,"
 ## Type: string
 ## Description: The ODBC connection string.
 database = "driver=mysql1;server=localhost;database=webmpd;uid=root;pwd=password"
+
+## Type: dict
+## Description: The permissions for a guest user.
+default_permissions = {
+	"access": True,
+	"playback": {
+		"view": True,
+		"control": False,
+		"change_options": False
+	},
+	"playlist": {
+		"change": False,
+		"clear": False,
+		"add": {
+			"file": False,
+			"artist": False,
+			"album": False
+		}
+	},
+	"database": {
+		"view": True
+	},
+	"filesystem": {
+		"view": True
+	},
+	"search": True,
+	"stored_playlists": {
+		"view": True,
+		"load": False,
+		"remove": False
+	}
+}

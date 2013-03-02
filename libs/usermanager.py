@@ -28,35 +28,6 @@ import libs.config as config
 import pyodbc
 
 DB_CONN = None
-GUEST_PERMISSIONS = {
-	"access": True,
-	"playback": {
-		"view": True,
-		"control": False,
-		"change_options": False
-	},
-	"playlist": {
-		"change": False,
-		"clear": False,
-		"add": {
-			"file": False,
-			"artist": False,
-			"album": False
-		}
-	},
-	"database": {
-		"view": True
-	},
-	"filesystem": {
-		"view": True
-	},
-	"search": True,
-	"stored_playlists": {
-		"view": True,
-		"load": False,
-		"remove": False
-	}
-}
 SID_CHARS = [ "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ]
 
 def gen_sid ():
@@ -157,7 +128,7 @@ def get_permission (name):
 
 def get_permissions ():
 	## Set default permissions:
-	permissions = GUEST_PERMISSIONS
+	permissions = config.default_permissions
 	## Get session cookie:
 	cookies = get_cookies()
 	if not "webmpd_sid" in cookies:
