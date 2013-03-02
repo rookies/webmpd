@@ -186,9 +186,6 @@ var DefaultJS = {
 				$("#playlist_clear_link").addClass("invisible");
 			};
 			/*
-			 * TODO: playlist.add.*
-			*/
-			/*
 			 * database.view
 			*/
 			if (data.database.view)
@@ -609,7 +606,7 @@ var DefaultJS = {
 			data.sort();
 			for (i=0; i < data.length; i++)
 			{
-				$("#database_table_artists").append('<li><a href="#add" onclick="return !DefaultJS.addto_playlist_artist(\'' + data[i].replace(/'/g, "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a><a href="#albums" onclick="return !DefaultJS.get_albums(\'' + data[i].replace(/'/g, "\\'") + '\', false);">' + data[i] + '</a></li>');
+				$("#database_table_artists").append('<li>' + ((DefaultJS.permissions.playlist.add.artist)?'<a href="#add" onclick="return !DefaultJS.addto_playlist_artist(\'' + data[i].replace(/'/g, "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a>':'') + ' <a href="#albums" onclick="return !DefaultJS.get_albums(\'' + data[i].replace(/'/g, "\\'") + '\', false);">' + data[i] + '</a></li>');
 			}
 		});
 	},
@@ -640,9 +637,9 @@ var DefaultJS = {
 				if (data[i] == "")
 				{
 					if (all == true)
-						$("#database_table_albums").append('<li><a href="#add" onclick="return !DefaultJS.addto_playlist_album(\'\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a><a href="#songs" onclick="return !DefaultJS.get_songs(\'\', \'\', false, false);">[Unknown album]</a></li>');
+						$("#database_table_albums").append('<li>' + ((DefaultJS.permissions.playlist.add.album)?'<a href="#add" onclick="return !DefaultJS.addto_playlist_album(\'\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a>':'') + ' <a href="#songs" onclick="return !DefaultJS.get_songs(\'\', \'\', false, false);">[Unknown album]</a></li>');
 					else
-						$("#database_table_albums").append('<li><a href="#add" onclick="return !DefaultJS.addto_playlist_album(\'\', \'' + artist.replace(/'/g, "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a><a href="#songs" onclick="return !DefaultJS.get_songs(\'' + artist.replace(/'/g, "\\'") + '\', \'\', false, false);">[Unknown album]</a></li>');
+						$("#database_table_albums").append('<li>' + ((DefaultJS.permissions.playlist.add.album)?'<a href="#add" onclick="return !DefaultJS.addto_playlist_album(\'\', \'' + artist.replace(/'/g, "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a>':'') + ' <a href="#songs" onclick="return !DefaultJS.get_songs(\'' + artist.replace(/'/g, "\\'") + '\', \'\', false, false);">[Unknown album]</a></li>');
 					break;
 				};
 			}
@@ -651,9 +648,9 @@ var DefaultJS = {
 				if (data[i] != "")
 				{
 					if (all == true)
-						$("#database_table_albums").append('<li><a href="#add" onclick="return !DefaultJS.addto_playlist_album(\'' + data[i].replace(/'/g, "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a><a href="#songs" onclick="return !DefaultJS.get_songs(\'\', \'' + data[i].replace(/'/g, "\\'") + '\', false, false);">' + data[i] + '</a></li>');
+						$("#database_table_albums").append('<li>' + ((DefaultJS.permissions.playlist.add.album)?'<a href="#add" onclick="return !DefaultJS.addto_playlist_album(\'' + data[i].replace(/'/g, "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a>':'') + ' <a href="#songs" onclick="return !DefaultJS.get_songs(\'\', \'' + data[i].replace(/'/g, "\\'") + '\', false, false);">' + data[i] + '</a></li>');
 					else
-						$("#database_table_albums").append('<li><a href="#add" onclick="return !DefaultJS.addto_playlist_album(\'' + data[i].replace(/'/g, "\\'") + '\', \'' + artist.replace(/'/g, "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a><a href="#songs" onclick="return !DefaultJS.get_songs(\'' + artist.replace(/'/g, "\\'") + '\', \'' + data[i].replace(/'/g, "\\'") + '\', false, false);">' + data[i] + '</a></li>');
+						$("#database_table_albums").append('<li>' + ((DefaultJS.permissions.playlist.add.album)?'<a href="#add" onclick="return !DefaultJS.addto_playlist_album(\'' + data[i].replace(/'/g, "\\'") + '\', \'' + artist.replace(/'/g, "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a>':'') + ' <a href="#songs" onclick="return !DefaultJS.get_songs(\'' + artist.replace(/'/g, "\\'") + '\', \'' + data[i].replace(/'/g, "\\'") + '\', false, false);">' + data[i] + '</a></li>');
 				};
 			}
 		});
@@ -695,7 +692,7 @@ var DefaultJS = {
 					showtitle = data[i].file;
 				else
 					showtitle = data[i].title;
-				$("#database_table_songs").append('<li><a href="#add" onclick="return !DefaultJS.addto_playlist(\'' + data[i].file.replace(/'/g, "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a> ' + showtitle + '</li>');
+				$("#database_table_songs").append('<li>' + ((DefaultJS.permissions.playlist.add.file)?'<a href="#add" onclick="return !DefaultJS.addto_playlist(\'' + data[i].file.replace(/'/g, "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a>':'') + ' ' + showtitle + '</li>');
 			}
 		});
 		return true;
