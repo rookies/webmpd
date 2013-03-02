@@ -67,3 +67,9 @@ def get_permission (name):
 
 def get_permissions ():
 	return GUEST_PERMISSIONS
+
+def is_loggedin ():
+	return False
+
+def logout ():
+	return True

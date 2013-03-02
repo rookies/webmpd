@@ -49,16 +49,22 @@ if not "page" in qs:
 		handler.set_status(302)
 		handler.set_header("Location", "index.py?page=login")
 	tpl = env.get_template("index_default.html")
-	print(tpl.render())
-elif qs["page"][0] == "login":
-	tpl = env.get_template("login.html")
-	if "error" in qs:
-		err = True
-	else:
-		err = False
 	print(tpl.render(
-		error=err
+		loggedin=usermanager.is_loggedin()
 	))
+elif qs["page"][0] == "login":
+	if usermanager.is_loggedin():
+		handler.set_status(302)
+		handler.set_header("Location", "index.py")
+	else:
+		tpl = env.get_template("login.html")
+		if "error" in qs:
+			err = True
+		else:
+			err = False
+		print(tpl.render(
+			error=err
+		))
 elif qs["page"][0] == "loginaction":
 	## Read POST data:
 	data = urllib.parse.parse_qs(sys.stdin.read())
@@ -77,3 +83,7 @@ elif qs["page"][0] == "loginaction":
 		else:
 			handler.set_status(302)
 			handler.set_header("Location", "index.py?page=login&error")
+elif qs["page"][0] == "logout":
+	usermanager.logout()
+	handler.set_status(302)
+	handler.set_header("Location", "index.py")

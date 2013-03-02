@@ -10,6 +10,9 @@
 	<body onload="DefaultJS.init();">
 		<div id="leftrow">
 			<div id="leftrow_box1">
+				{% if loggedin %}{{ username }} - <a href="index.py?page=logout">Logout</a>{% else %}Guest - <a href="index.py?page=login">Login</a>{% endif %}
+				<br />
+				<br />
 				<div id="player_controls" class="invisible">
 					<a href="#backward" onclick="return !DefaultJS.go_prev();"><img src="res/img/media-skip-backward.png" alt="Skip backward" height="32" width="32" /></a><a href="#stop" onclick="return !DefaultJS.stop();"><img src="res/img/media-playback-stop.png" alt="Stop" height="32" width="32" /></a><a href="#play" onclick="return !DefaultJS.play();" id="player_play"><img src="res/img/media-playback-start.png" alt="Play" height="32" width="32" /></a><a href="#pause" onclick="return !DefaultJS.pause();" id="player_pause" class="invisible"><img src="res/img/media-playback-pause.png" alt="Pause" height="32" width="32" /></a><a href="#forward" onclick="return !DefaultJS.go_next();"><img src="res/img/media-skip-forward.png" alt="Skip forward" height="32" width="32" /></a>
 				</div>
