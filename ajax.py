@@ -38,6 +38,34 @@ import libs.mpd as mpd
 
 ## GLOBAL VARIABLES:
 MPD_CLIENT = mpd.MPDClient()
+PERMISSIONS = {
+	"playback": {
+		"view": True,
+		"control": True,
+		"change_options": True
+	},
+	"playlist": {
+		"change": True,
+		"clear": True,
+		"add": {
+			"file": True,
+			"artist": True,
+			"album": True
+		}
+	},
+	"database": {
+		"view": True
+	},
+	"filesystem": {
+		"view": True
+	},
+	"search": True,
+	"stored_playlists": {
+		"view": True,
+		"load": True,
+		"remove": True
+	}
+}
 ## DEFINE FUNCTIONS:
 def send_error(code, message):
 	print(json.dumps({
@@ -61,7 +89,9 @@ if not "action" in qs:
 	send_error(100, "No action specified!")
 else:
 	action = qs["action"][0]
-	if action == "currentsong":
+	if action == "permissions":
+		print(json.dumps(PERMISSIONS))
+	elif action == "currentsong":
 		mpd_connect()
 		print(json.dumps(MPD_CLIENT.currentsong()))
 		mpd_disconnect()

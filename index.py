@@ -51,13 +51,13 @@ print("""<html>
 	<body onload="DefaultJS.init();">
 		<div id="leftrow">
 			<div id="leftrow_box1">
-				<div id="player_controls">
+				<div id="player_controls" class="invisible">
 					<a href="#backward" onclick="return !DefaultJS.go_prev();"><img src="res/img/media-skip-backward.png" alt="Skip backward" height="32" width="32" /></a><a href="#stop" onclick="return !DefaultJS.stop();"><img src="res/img/media-playback-stop.png" alt="Stop" height="32" width="32" /></a><a href="#play" onclick="return !DefaultJS.play();" id="player_play"><img src="res/img/media-playback-start.png" alt="Play" height="32" width="32" /></a><a href="#pause" onclick="return !DefaultJS.pause();" id="player_pause" class="invisible"><img src="res/img/media-playback-pause.png" alt="Pause" height="32" width="32" /></a><a href="#forward" onclick="return !DefaultJS.go_next();"><img src="res/img/media-skip-forward.png" alt="Skip forward" height="32" width="32" /></a>
 				</div>
-				<input type="checkbox" id="player_repeat" onchange="DefaultJS.update_modifiers();" /> <label for="player_repeat">repeat</label><br />
-				<input type="checkbox" id="player_random" onchange="DefaultJS.update_modifiers();" /> <label for="player_random">random</label><br />
-				<input type="checkbox" id="player_single" onchange="DefaultJS.update_modifiers();" /> <label for="player_single">single</label><br />
-				<input type="checkbox" id="player_consume" onchange="DefaultJS.update_modifiers();" /> <label for="player_consume">consume</label>
+				<input disabled="disabled" type="checkbox" id="player_repeat" onchange="DefaultJS.update_modifiers();" /> <label for="player_repeat">repeat</label><br />
+				<input disabled="disabled" type="checkbox" id="player_random" onchange="DefaultJS.update_modifiers();" /> <label for="player_random">random</label><br />
+				<input disabled="disabled" type="checkbox" id="player_single" onchange="DefaultJS.update_modifiers();" /> <label for="player_single">single</label><br />
+				<input disabled="disabled" type="checkbox" id="player_consume" onchange="DefaultJS.update_modifiers();" /> <label for="player_consume">consume</label>
 				<br />
 				<div id="player_volume">
 					<img src="res/img/audio-volume-high.png" title="Set volume to 100%" alt="Full volume" height="32" width="32" />
@@ -70,7 +70,7 @@ print("""<html>
 					<img src="res/img/list-remove-big.png" title="Disable Crossfade" alt="No XFade" height="32" width="32" />
 				</div>
 			</div>
-			<div id="leftrow_box2">
+			<div id="leftrow_box2" class="invisible">
 				<span class="heading">Search</span>
 				<br />
 				<input style="color: grey;" type="text" value="Query" class="field" onfocus="if ($(this).prop('value') == 'Query') { $(this).prop('value', ''); $(this).css('color', 'black'); }" onblur="if ($(this).prop('value') == '') { $(this).prop('value', 'Query'); $(this).css('color', 'grey'); }" id="search_query" />
@@ -100,7 +100,7 @@ print("""<html>
 						The playlist is empty.
 					</p>
 					<div id="player_playlist_notempty" class="invisible">
-						<a href="#clear" onclick="return !DefaultJS.clear_playlist();"><img src="res/img/edit-clear.png" width="32" height="32" alt="Clear playlist" title="Clear playlist" /></a>
+						<a href="#clear" id="playlist_clear_link" class="invisible" onclick="return !DefaultJS.clear_playlist();"><img src="res/img/edit-clear.png" width="32" height="32" alt="Clear playlist" title="Clear playlist" /></a>
 						<table id="player_playlist">
 							<thead>
 								<tr>

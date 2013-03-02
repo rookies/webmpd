@@ -29,10 +29,10 @@ var DefaultJS = {
 	xfade_bar_locked: false,
 	first_statuscheck: true,
 	playlist: [],
+	permissions: null,
 	init: function ()
 	{
-		this.get_status();
-		this.get_status_timeout = window.setTimeout(this.get_status, 1000);
+		this.get_permissions();
 		$("#player_progress").slider({
 			value: 0,
 			min: 0,
@@ -43,7 +43,8 @@ var DefaultJS = {
 			stop: function (event, ui) {
 				DefaultJS.progress_bar_locked = false;
 				DefaultJS.seek(ui.value);
-			}
+			},
+			disabled: true
 		});
 		$("#player_volume_bar").slider({
 			orientation: "vertical",
@@ -56,7 +57,8 @@ var DefaultJS = {
 			stop: function (event, ui) {
 				DefaultJS.volume_bar_locked = false;
 				DefaultJS.set_volume(ui.value);
-			}
+			},
+			disabled: true
 		});
 		$("#player_xfade_bar").slider({
 			orientation: "vertical",
@@ -69,7 +71,8 @@ var DefaultJS = {
 			stop: function (event, ui) {
 				DefaultJS.xfade_bar_locked = false;
 				DefaultJS.set_xfade(ui.value);
-			}
+			},
+			disabled: true
 		});
 		$("#player_list_tabs").tabs({
 			beforeActivate: function (event, ui) {
@@ -94,7 +97,8 @@ var DefaultJS = {
 						DefaultJS.list_playlists();
 						break;
 				}
-			}
+			},
+			disabled: [ 1, 2, 3, 4 ]
 		});
 		$("#player_playlist tbody").sortable({
 			stop: function (event, ui) {
@@ -106,7 +110,130 @@ var DefaultJS = {
 					if (DefaultJS.playlist[pos] != id)
 						DefaultJS.move_playlistitem(id, pos);
 				});
+			},
+			disabled: true
+		});
+	},
+	get_permissions: function ()
+	{
+		$.getJSON('ajax.py?action=permissions', function (data) {
+			DefaultJS.permissions = data;
+			/*
+			 * playback.view
+			*/
+			if (data.playback.view)
+			{
+				DefaultJS.get_status();
+				DefaultJS.get_status_timeout = window.setTimeout(DefaultJS.get_status, 1000);
 			}
+			else
+				alert("You don't have the permissions to see this page!");
+			/*
+			 * playback.control
+			*/
+			if (data.playback.control)
+			{
+				$("#player_controls").removeClass("invisible");
+				$("#player_progress").slider("enable");
+				
+			}
+			else
+			{
+				$("#player_controls").addClass("invisible");
+				$("#player_progress").slider("disable");
+			};
+			/*
+			 * playback.change_options
+			*/
+			if (data.playback.change_options)
+			{
+				$("#player_volume_bar").slider("enable");
+				$("#player_xfade_bar").slider("enable");
+				$("#player_repeat").prop("disabled", false);
+				$("#player_random").prop("disabled", false);
+				$("#player_single").prop("disabled", false);
+				$("#player_consume").prop("disabled", false);
+			}
+			else
+			{
+				$("#player_volume_bar").slider("disable");
+				$("#player_xfade_bar").slider("disable");
+				$("#player_repeat").prop("disabled", true);
+				$("#player_random").prop("disabled", true);
+				$("#player_single").prop("disabled", true);
+				$("#player_consume").prop("disabled", true);
+			};
+			/*
+			 * playlist.change
+			*/
+			if (data.playlist.change)
+			{
+				$("#player_playlist tbody").sortable("enable");
+			}
+			else
+			{
+				$("#player_playlist tbody").sortable("disable");
+			};
+			/*
+			 * playlist.clear
+			*/
+			if (data.playlist.clear)
+			{
+				$("#playlist_clear_link").removeClass("invisible");
+			}
+			else
+			{
+				$("#playlist_clear_link").addClass("invisible");
+			};
+			/*
+			 * TODO: playlist.add.*
+			*/
+			/*
+			 * database.view
+			*/
+			if (data.database.view)
+			{
+				$("#player_list_tabs").tabs("enable", 1);
+			}
+			else
+			{
+				$("#player_list_tabs").tabs("disable", 1);
+			};
+			/*
+			 * filesystem.view
+			*/
+			if (data.filesystem.view)
+			{
+				$("#player_list_tabs").tabs("enable", 2);
+			}
+			else
+			{
+				$("#player_list_tabs").tabs("disable", 2);
+			};
+			/*
+			 * search
+			*/
+			if (data.search)
+			{
+				$("#leftrow_box2").removeClass("invisible");
+				$("#player_list_tabs").tabs("enable", 3);
+			}
+			else
+			{
+				$("#leftrow_box2").addClass("invisible");
+				$("#player_list_tabs").tabs("disable", 3);
+			};
+			/*
+			 * stored_playlists.view
+			*/
+			if (data.stored_playlists.view)
+			{
+				$("#player_list_tabs").tabs("enable", 4);
+			}
+			else
+			{
+				$("#player_list_tabs").tabs("disable", 4);
+			};
 		});
 	},
 	get_status: function ()
@@ -445,7 +572,7 @@ var DefaultJS = {
 					classes = ' class="even"';
 				else
 					classes = '';
-				$("#player_playlist tbody").append('<tr' + classes + '><td class="invisible">' + data[i].id + '</td><td>' + min + ':' + sec + '</td><td>' + data[i].artist + '</td><td>' + data[i].title + '</td><td>' + data[i].date + '</td><td>' + data[i].album + '</td><td><a href="#remove" onclick="return !DefaultJS.remove_playlistitem(' + data[i].id + ');"><img src="res/img/list-remove.png" width="16" height="16" alt="Remove" title="Remove" /></a> <a href="#play" onclick="return !DefaultJS.play_playlistitem(' + data[i].id + ');"><img src="res/img/media-playback-start-small.png" width="16" height="16" alt="Start playback here" title="Start playback here" /></a></td></tr>');
+				$("#player_playlist tbody").append('<tr' + classes + '><td class="invisible">' + data[i].id + '</td><td>' + min + ':' + sec + '</td><td>' + data[i].artist + '</td><td>' + data[i].title + '</td><td>' + data[i].date + '</td><td>' + data[i].album + '</td><td>' + ((DefaultJS.permissions.playlist.change)?'<a href="#remove" onclick="return !DefaultJS.remove_playlistitem(' + data[i].id + ');"><img src="res/img/list-remove.png" width="16" height="16" alt="Remove" title="Remove" /></a>':'') + ' ' + ((DefaultJS.permissions.playback.control)?('<a href="#play" onclick="return !DefaultJS.play_playlistitem(' + data[i].id + ');"><img src="res/img/media-playback-start-small.png" width="16" height="16" alt="Start playback here" title="Start playback here" /></a>'):'') + '</td></tr>');
 				DefaultJS.playlist.push(parseInt(data[i].id));
 			}
 		});
@@ -781,7 +908,7 @@ var DefaultJS = {
 			$("#stored_playlists li").remove();
 			for (i=0; i < data.length; i++)
 			{
-				$("#stored_playlists").append('<li><a href="#load" onclick="return !DefaultJS.load_stored(\'' + data[i].playlist.replace(/'/g, "\\'") + '\');"><img src="res/img/list-add.png" alt="Add" title="Add to playlist" width="16" height="16" /></a> <a href="#rm" onclick="return !DefaultJS.rm_stored(\'' + data[i].playlist.replace(/'/g, "\\'") + '\');"><img src="res/img/list-remove.png" alt="Remove" title="Remove stored playlist" width="16" height="16" /></a> <a href="#playlistinfo" onclick="return !DefaultJS.list_playlist_items(\'' + data[i].playlist.replace(/'/g, "\\'") + '\');">' + data[i].playlist + '</a></li>');
+				$("#stored_playlists").append('<li>' + ((DefaultJS.permissions.stored_playlists.load)?'<a href="#load" onclick="return !DefaultJS.load_stored(\'' + data[i].playlist.replace(/'/g, "\\'") + '\');"><img src="res/img/list-add.png" alt="Add" title="Add to playlist" width="16" height="16" /></a>':'') + ' ' + ((DefaultJS.permissions.stored_playlists.remove)?'<a href="#remove" onclick="return !DefaultJS.rm_stored(\'' + data[i].playlist.replace(/'/g, "\\'") + '\');"><img src="res/img/list-remove.png" alt="Remove" title="Remove stored playlist" width="16" height="16" /></a>':'') + ' <a href="#playlistinfo" onclick="return !DefaultJS.list_playlist_items(\'' + data[i].playlist.replace(/'/g, "\\'") + '\');">' + data[i].playlist + '</a></li>');
 			}
 		});
 	},
