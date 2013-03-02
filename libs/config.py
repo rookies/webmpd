@@ -62,3 +62,9 @@ timeout = 10
 ##   Normally we don't need to set this, because we close the connection
 ##   a few moments after opening it.
 idletimeout = None
+
+## Type: string
+## Description: The universal salt for the user password hashes.
+##   Choose a random string with 10 characters.
+##   If you change this, all existing passwords in the user database become invalid.
+salt = "-1Znnq1%z,"
