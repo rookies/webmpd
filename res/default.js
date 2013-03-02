@@ -793,10 +793,17 @@ var DefaultJS = {
 	},
 	clear_playlist: function ()
 	{
-		$.get('ajax.py?action=clear', function (data) {
-			DefaultJS.get_status();
-		});
-		return true;
+		if (!confirm("Do you really want to clear the playlist?"))
+		{
+			return true;
+		}
+		else
+		{
+			$.get('ajax.py?action=clear', function (data) {
+				DefaultJS.get_status();
+			});
+			return true;
+		};
 	},
 	list_filesystem: function (path)
 	{
