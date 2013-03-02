@@ -82,6 +82,19 @@ def mpd_connect():
 		MPD_CLIENT.password(config.password)
 def mpd_disconnect():
 	MPD_CLIENT.close()
+def check_permission(name):
+	if name.find(".") == -1:
+		if PERMISSIONS[name]:
+			return True
+	else:
+		n = name.split(".")
+		perm = PERMISSIONS
+		for i in n:
+			perm = perm[i]
+		if perm:
+			return True
+	send_error(201, "Action not allowed! You need permission %s!" % name)
+	return False
 ## PARSE QUERY STRING:
 qs = urllib.parse.parse_qs(os.getenv("QUERY_STRING"), keep_blank_values=True)
 ## CHECK ACTION ARGUMENT:
@@ -92,30 +105,37 @@ else:
 	if action == "permissions":
 		print(json.dumps(PERMISSIONS))
 	elif action == "currentsong":
+		check_permission("playback.view")
 		mpd_connect()
 		print(json.dumps(MPD_CLIENT.currentsong()))
 		mpd_disconnect()
 	elif action == "status":
+		check_permission("playback.view")
 		mpd_connect()
 		print(json.dumps(MPD_CLIENT.status()))
 		mpd_disconnect()
 	elif action == "stats":
+		check_permission("playback.view")
 		mpd_connect()
 		print(json.dumps(MPD_CLIENT.stats()))
 		mpd_disconnect()
 	elif action == "pause":
+		check_permission("playback.control")
 		mpd_connect()
 		print(json.dumps(MPD_CLIENT.pause()))
 		mpd_disconnect()
 	elif action == "play":
+		check_permission("playback.control")
 		mpd_connect()
 		print(json.dumps(MPD_CLIENT.play()))
 		mpd_disconnect()
 	elif action == "stop":
+		check_permission("playback.control")
 		mpd_connect()
 		print(json.dumps(MPD_CLIENT.stop()))
 		mpd_disconnect()
 	elif action == "setvol":
+		check_permission("playback.change_options")
 		try:
 			value = int(qs["value"][0])
 		except:
@@ -125,6 +145,7 @@ else:
 			print(json.dumps(MPD_CLIENT.setvol(value)))
 			mpd_disconnect()
 	elif action == "setxfade":
+		check_permission("playback.change_options")
 		try:
 			value = int(qs["value"][0])
 		except:
@@ -134,6 +155,7 @@ else:
 			print(json.dumps(MPD_CLIENT.crossfade(value)))
 			mpd_disconnect()
 	elif action == "seek":
+		check_permission("playback.control")
 		try:
 			value = int(qs["value"][0])
 		except:
@@ -143,14 +165,17 @@ else:
 			print(json.dumps(MPD_CLIENT.seek(0, value)))
 			mpd_disconnect()
 	elif action == "prev":
+		check_permission("playback.control")
 		mpd_connect()
 		print(json.dumps(MPD_CLIENT.previous()))
 		mpd_disconnect()
 	elif action == "next":
+		check_permission("playback.control")
 		mpd_connect()
 		print(json.dumps(MPD_CLIENT.next()))
 		mpd_disconnect()
 	elif action == "update_modifiers":
+		check_permission("playback.change_options")
 		mpd_connect()
 		MPD_CLIENT.command_list_ok_begin()
 		# repeat:
@@ -189,10 +214,12 @@ else:
 		print(json.dumps(MPD_CLIENT.command_list_end()))
 		mpd_disconnect()
 	elif action == "playlist":
+		check_permission("playback.view")
 		mpd_connect()
 		print(json.dumps(MPD_CLIENT.playlistinfo()))
 		mpd_disconnect()
 	elif action == "moveid":
+		check_permission("playlist.change")
 		try:
 			fr = int(qs["from"][0])
 		except:
@@ -207,6 +234,7 @@ else:
 				print(json.dumps(MPD_CLIENT.moveid(fr, to)))
 				mpd_disconnect()
 	elif action == "deleteid":
+		check_permission("playlist.change")
 		try:
 			id_ = int(qs["id"][0])
 		except:
@@ -216,10 +244,12 @@ else:
 			print(json.dumps(MPD_CLIENT.deleteid(id_)))
 			mpd_disconnect()
 	elif action == "artists":
+		check_permission("database.view")
 		mpd_connect()
 		print(json.dumps(MPD_CLIENT.list("artist")))
 		mpd_disconnect()
 	elif action == "albums":
+		check_permission("database.view")
 		if "all" in qs:
 			mpd_connect()
 			print(json.dumps(MPD_CLIENT.list("album")))
@@ -234,6 +264,7 @@ else:
 				print(json.dumps(MPD_CLIENT.list("album", artist)))
 				mpd_disconnect()
 	elif action == "songs":
+		check_permission("database.view")
 		if "all" in qs:
 			mpd_connect()
 			res = MPD_CLIENT.listallinfo()
@@ -270,6 +301,7 @@ else:
 						print(json.dumps(MPD_CLIENT.find("artist", artist, "album", album)))
 					mpd_disconnect()
 	elif action == "add":
+		check_permission("playlist.add.file")
 		try:
 			f = qs["file"][0]
 		except:
@@ -283,6 +315,7 @@ else:
 				print(json.dumps(res))
 			mpd_disconnect()
 	elif action == "addartist":
+		check_permission("playlist.add.artist")
 		try:
 			artist = qs["artist"][0]
 		except:
@@ -292,6 +325,7 @@ else:
 			print(json.dumps(MPD_CLIENT.findadd("artist", artist)))
 			mpd_disconnect()
 	elif action == "addalbum":
+		check_permission("playlist.add.album")
 		try:
 			album = qs["album"][0]
 		except:
@@ -308,6 +342,7 @@ else:
 				print(json.dumps(MPD_CLIENT.findadd("artist", artist, "album", album)))
 			mpd_disconnect()
 	elif action == "playid":
+		check_permission("playback.control")
 		try:
 			id_ = int(qs["id"][0])
 		except:
@@ -317,10 +352,12 @@ else:
 			print(json.dumps(MPD_CLIENT.playid(id_)))
 			mpd_disconnect()
 	elif action == "clear":
+		check_permission("playlist.clear")
 		mpd_connect()
 		print(json.dumps(MPD_CLIENT.clear()))
 		mpd_disconnect()
 	elif action == "ls":
+		check_permission("filesystem.view")
 		try:
 			path = qs["path"][0]
 		except:
@@ -339,6 +376,7 @@ else:
 				print(json.dumps(res2))
 			mpd_disconnect()
 	elif action == "search":
+		check_permission("search")
 		arg_keys = [ "any", "artist", "title", "album", "file", "composer", "performer", "genre", "date", "comment"]
 		args = []
 		for key in arg_keys:
@@ -356,10 +394,12 @@ else:
 			print(json.dumps(MPD_CLIENT.search(*args)))
 			mpd_disconnect()
 	elif action == "listplaylists":
+		check_permission("stored_playlists.view")
 		mpd_connect()
 		print(json.dumps(MPD_CLIENT.listplaylists()))
 		mpd_disconnect()
 	elif action == "listplaylistinfo":
+		check_permission("stored_playlists.view")
 		try:
 			name = qs["name"][0]
 		except:
@@ -369,6 +409,7 @@ else:
 			print(json.dumps(MPD_CLIENT.listplaylistinfo(name)))
 			mpd_disconnect()
 	elif action == "load":
+		check_permission("stored_playlists.load")
 		try:
 			name = qs["name"][0]
 		except:
@@ -378,6 +419,7 @@ else:
 			print(json.dumps(MPD_CLIENT.load(name)))
 			mpd_disconnect()
 	elif action == "rm":
+		check_permission("stored_playlists.remove")
 		try:
 			name = qs["name"][0]
 		except:
