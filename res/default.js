@@ -113,35 +113,6 @@ var DefaultJS = {
 			},
 			disabled: true
 		});
-		$("#playlist_saver_dialog").dialog({
-			autoOpen: false,
-			width: 400,
-			buttons: [
-				{
-					text: "Cancel",
-					click: function () {
-						$(this).dialog("close");
-					}
-				},
-				{
-					text: "Save",
-					click: function () {
-						var name = $("#playlist_saver_name").prop("value");
-						name = name.replace(/^\s+|\s+$/g, '');
-						if (name == '')
-							alert('Please enter a name for the playlist!');
-						else
-						{
-							DefaultJS.save_playlist(name);
-							$(this).dialog("close");
-						};
-					}
-				}
-			],
-			open: function (event, ui) {
-				$("#playlist_saver_name").prop("value", "");
-			}
-		});
 		$("#playlist_saver_dialog").removeClass("invisible");
 	},
 	get_permissions: function ()
@@ -487,7 +458,10 @@ var DefaultJS = {
 				$("#player_album").addClass("invisible");
 			else
 			{
-				$("#player_album").html(data.album);
+				if (data.date == null)
+					$("#player_album").html(data.album);
+				else
+					$("#player_album").html(data.album + ' (' + data.date + ')');
 				/*
 				 * Set visible:
 				*/
@@ -608,7 +582,7 @@ var DefaultJS = {
 					classes = ' class="even"';
 				else
 					classes = '';
-				$("#player_playlist tbody").append('<tr' + classes + '><td class="invisible">' + data[i].id + '</td><td>' + min + ':' + sec + '</td><td>' + data[i].artist + '</td><td>' + data[i].title + '</td><td>' + data[i].date + '</td><td>' + data[i].album + '</td><td>' + ((DefaultJS.permissions.playlist.change)?'<a href="#remove" onclick="return !DefaultJS.remove_playlistitem(' + data[i].id + ');"><img src="res/img/list-remove.png" width="16" height="16" alt="Remove" title="Remove" /></a>':'') + ' ' + ((DefaultJS.permissions.playback.control)?('<a href="#play" onclick="return !DefaultJS.play_playlistitem(' + data[i].id + ');"><img src="res/img/media-playback-start-small.png" width="16" height="16" alt="Start playback here" title="Start playback here" /></a>'):'') + '</td></tr>');
+				$("#player_playlist tbody").append('<tr' + classes + '><td class="invisible">' + data[i].id + '</td><td>' + min + ':' + sec + '</td><td>' + data[i].artist + '</td><td>' + data[i].title + '</td><td>' + data[i].date + '</td><td>' + data[i].album + '</td><td>' + ((DefaultJS.permissions.playlist.change)?'<a href="#remove" onclick="return !DefaultJS.remove_playlistitem(' + data[i].id + ');"><img src="res/img/list-remove.png" width="16" height="16" alt="Remove" title="Remove" /></a>':'') + ' ' + ((DefaultJS.permissions.playback.control)?('<a href="#play" onclick="return !DefaultJS.play_playlistitem(' + data[i].id + ');"><img src="res/img/media-playback-start.png" width="16" height="16" alt="Start playback here" title="Start playback here" /></a>'):'') + ' ' + ((DefaultJS.permissions.playlist.change && i != 0)?'<a href="#moveup" onclick="return !DefaultJS.move_playlistitem_up(' + data[i].id + ');"><img src="res/img/go-up.png" height="16" width="16" alt="Move up" title="Move up" /></a>':'') + ' ' + ((DefaultJS.permissions.playlist.change && i != data.length-1)?'<a href="#movedown" onclick="return !DefaultJS.move_playlistitem_down(' + data[i].id + ');"><img src="res/img/go-down.png" height="16" width="16" alt="Move down" title="Move down" /></a>':'') + '</td></tr>');
 				DefaultJS.playlist.push(parseInt(data[i].id));
 			}
 		});
@@ -977,24 +951,74 @@ var DefaultJS = {
 	},
 	rm_stored: function (name)
 	{
-		$.get('ajax.py?action=rm&name=' + name, function (data) {
-			$("#stored_playlists_table_items_header").html('Items');
-			$("#stored_playlist_items li").remove();
-			DefaultJS.list_playlists();
-			DefaultJS.show_status('Successfully deleted the stored playlist <em>' + name + '</em>!');
-		});
-		return true;
+		if (!confirm("Really delete the playlist '" + name + "'?"))
+		{
+			return true;
+		}
+		else
+		{
+			$.get('ajax.py?action=rm&name=' + name, function (data) {
+				$("#stored_playlists_table_items_header").html('Items');
+				$("#stored_playlist_items li").remove();
+				DefaultJS.list_playlists();
+				DefaultJS.show_status('Successfully deleted the stored playlist <em>' + name + '</em>!');
+			});
+			return true;
+		};
 	},
 	show_playlist_saver: function ()
 	{
-		$("#playlist_saver_dialog").dialog("open");
-		return true;
+		// Try to get playlist name from user:
+		var name = '';
+		while (name != null && name.replace(/^\s+|\s+$/g, '') == '')
+			name = prompt("Please enter a name for the playlist.", "");
+		if (name == null)
+		{
+			return true;
+		}
+		else
+		{
+			name = name.replace(/^\s+|\s+$/g, '');
+			// Save the playlist:
+			DefaultJS.save_playlist(name);
+			return true;
+		};
 	},
 	save_playlist: function (name)
 	{
 		$.get('ajax.py?action=save&name=' + name, function (data) {
 			DefaultJS.show_status('Playlist successfully saved as <em>' + name + '</em>!');
 		});
+		return true;
+	},
+	move_playlistitem_up: function (id)
+	{
+		var i, pos;
+		// Get old position:
+		for (i=0; i < DefaultJS.playlist.length; i++)
+		{
+			if (DefaultJS.playlist[i] == id)
+				pos = i;
+		}
+		// Get new position:
+		pos--;
+		// Send request:
+		DefaultJS.move_playlistitem(id, pos);
+		return true;
+	},
+	move_playlistitem_down: function (id)
+	{
+		var i, pos;
+		// Get old position:
+		for (i=0; i < DefaultJS.playlist.length; i++)
+		{
+			if (DefaultJS.playlist[i] == id)
+				pos = i;
+		}
+		// Get new position:
+		pos++;
+		// Send request:
+		DefaultJS.move_playlistitem(id, pos);
 		return true;
 	}
 }

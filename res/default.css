@@ -44,6 +44,7 @@ a:hover {
 div#leftrow {
 	float: left;
 	margin-left: 20px;
+	margin-bottom: 1%;
 }
 div#leftrow_box1 {
 	border: 1px solid black;

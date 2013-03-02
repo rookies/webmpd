@@ -8,10 +8,6 @@
 		<link rel="stylesheet" type="text/css" href="res/default.css" />
 	</head>
 	<body onload="DefaultJS.init();">
-		<div id="playlist_saver_dialog" class="invisible" title="Save current playlist">
-			<label for="playlist_saver_name">Name:</label>
-			<input type="text" id="playlist_saver_name" />
-		</div>
 		<div id="leftrow">
 			<div id="leftrow_box1">
 				{% if loggedin %}{{ username }} - <a href="index.py?page=logout">Logout</a>{% else %}Guest - <a href="index.py?page=login">Login</a>{% endif %}
@@ -26,14 +22,14 @@
 				<input disabled="disabled" type="checkbox" id="player_consume" onchange="DefaultJS.update_modifiers();" /> <label for="player_consume">consume</label>
 				<br />
 				<div id="player_volume">
-					<img src="res/img/audio-volume-high.png" title="Set volume to 100%" alt="Full volume" height="32" width="32" />
+					<a href="#volume" onclick="return !DefaultJS.set_volume(100);"><img src="res/img/audio-volume-high.png" title="Set volume to 100%" alt="Full volume" height="32" width="32" /></a>
 					<div id="player_volume_bar"></div>
-					<img src="res/img/audio-volume-muted.png" title="Mute sound" alt="Muted" height="32" width="32" />
+					<a href="#volume" onclick="return !DefaultJS.set_volume(0);"><img src="res/img/audio-volume-muted.png" title="Mute sound" alt="Muted" height="32" width="32" /></a>
 				</div>
 				<div id="player_xfade">
-					<img src="res/img/list-add-big.png" title="Set Crossfade to 30 sec" alt="Full XFade" height="32" width="32" />
+					<a href="#xfade" onclick="return !DefaultJS.set_xfade(30);"><img src="res/img/list-add-big.png" title="Set Crossfade to 30 sec" alt="Full XFade" height="32" width="32" /></a>
 					<div id="player_xfade_bar"></div>
-					<img src="res/img/list-remove-big.png" title="Disable Crossfade" alt="No XFade" height="32" width="32" />
+					<a href="#xfade" onclick="return !DefaultJS.set_xfade(0);"><img src="res/img/list-remove-big.png" title="Disable Crossfade" alt="No XFade" height="32" width="32" /></a>
 				</div>
 			</div>
 			<div id="leftrow_box2" class="invisible">
