@@ -68,3 +68,7 @@ idletimeout = None
 ##   Choose a random string with 10 characters.
 ##   If you change this, all existing passwords in the user database become invalid.
 salt = "-1Znnq1%z,"
+
+## Type: string
+## Description: The ODBC connection string.
+database = "driver=mysql1;server=localhost;database=webmpd;uid=root;pwd=password"
