@@ -71,5 +71,8 @@ def get_permissions ():
 def is_loggedin ():
 	return False
 
+def get_username ():
+	return None
+
 def logout ():
 	return True

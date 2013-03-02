@@ -50,7 +50,8 @@ if not "page" in qs:
 		handler.set_header("Location", "index.py?page=login")
 	tpl = env.get_template("index_default.html")
 	print(tpl.render(
-		loggedin=usermanager.is_loggedin()
+		loggedin=usermanager.is_loggedin(),
+		username=usermanager.get_username()
 	))
 elif qs["page"][0] == "login":
 	if usermanager.is_loggedin():

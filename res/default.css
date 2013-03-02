@@ -28,6 +28,19 @@
 body {
 	font-size: 1em;
 }
+a {
+	font-size: 1em;
+	color: black;
+	text-decoration: underline;
+}
+a:visited {
+	color: black;
+	text-decoration: underline;
+}
+a:hover {
+	color: #656565;
+	text-decoration: none;
+}
 div#leftrow {
 	float: left;
 	margin-left: 20px;
