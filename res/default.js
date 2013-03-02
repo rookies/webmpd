@@ -832,7 +832,7 @@ var DefaultJS = {
 			files.sort();
 			for (i=0; i < files.length; i++)
 			{
-				$("#filesystem_list").append('<li class="music"><a href="#add" onclick="return !DefaultJS.addto_playlist(\'' + files[i].replace(/'/g, "\\'") + '\');">' + files[i].split('/').pop() + '</a></li>');
+				$("#filesystem_list").append('<li class="music">' + ((DefaultJS.permissions.playlist.add.file)?'<a href="#add" onclick="return !DefaultJS.addto_playlist(\'' + files[i].replace(/'/g, "\\'") + '\');">' + files[i].split('/').pop() + '</a>':files[i].split('/').pop()) + '</li>');
 			}
 		});
 		return true;
@@ -887,7 +887,7 @@ var DefaultJS = {
 						name = data[i].artist + ' - ' + data[i].title;
 					else
 						name = data[i].file.split('/').pop();
-					$("#search_results_list").append('<li><a href="#add" onclick="return !DefaultJS.addto_playlist(\'' + data[i].file.replace(/'/g, "\\'") + '\');">' + name + '</a></li>');
+					$("#search_results_list").append('<li>' + ((DefaultJS.permissions.playlist.add.file)?'<a href="#add" onclick="return !DefaultJS.addto_playlist(\'' + data[i].file.replace(/'/g, "\\'") + '\');">' + name + '</a>':name) + '</li>');
 				}
 				/*
 				 * Show the right column:

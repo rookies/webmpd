@@ -38,19 +38,19 @@ import libs.mpd as mpd
 
 ## GLOBAL VARIABLES:
 MPD_CLIENT = mpd.MPDClient()
-PERMISSIONS = {
+GUEST_PERMISSIONS = {
 	"playback": {
 		"view": True,
-		"control": True,
-		"change_options": True
+		"control": False,
+		"change_options": False
 	},
 	"playlist": {
-		"change": True,
-		"clear": True,
+		"change": False,
+		"clear": False,
 		"add": {
-			"file": True,
-			"artist": True,
-			"album": True
+			"file": False,
+			"artist": False,
+			"album": False
 		}
 	},
 	"database": {
@@ -62,10 +62,11 @@ PERMISSIONS = {
 	"search": True,
 	"stored_playlists": {
 		"view": True,
-		"load": True,
-		"remove": True
+		"load": False,
+		"remove": False
 	}
 }
+PERMISSIONS = GUEST_PERMISSIONS
 ## DEFINE FUNCTIONS:
 def send_error(code, message):
 	print(json.dumps({
