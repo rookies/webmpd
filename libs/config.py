@@ -71,37 +71,61 @@ salt = "-1Znnq1%z,"
 
 ## Type: string
 ## Description: The ODBC connection string.
+##   This string gets directly to the connect method of pyodbc.
 database = "driver=mysql1;server=localhost;database=webmpd;uid=root;pwd=password"
 
 ## Type: dict
 ## Description: The permissions for a guest user.
 default_permissions = {
+	# If this is set to False, guest users will get redirected to the login form:
 	"access": True,
 	"playback": {
+		# This permission is necessary to view the current song, the playlist
+		# and general playback options. Normally, it's not useful to set this
+		# to False. Use access instead to force the guests to login:
 		"view": True,
+		# This permission is necessary for stopping, starting or pausing playback,
+		# seeking, playing a specific song and for going to the next or previous song:
 		"control": False,
+		# This permission is necessary for changing volume and xfade or setting
+		# playback modifiers (repeat, random, single and consume):
 		"change_options": False
 	},
 	"playlist": {
+		# This permission is necessary for deleting songs from the playlist or
+		# resorting it:
 		"change": False,
+		# This permission is necessary to clear the playlist:
 		"clear": False,
 		"add": {
+			# This permission is necessary to add a single file to the playlist:
 			"file": False,
+			# This permission is necessary to add all songs of an artist to the playlist:
 			"artist": False,
+			# This permission is necessary to add all songs of an album to the playlist:
 			"album": False
 		},
+		# This permission is necessary to save the current playlist as a stored playlist:
 		"save": False
 	},
 	"database": {
+		# This permission is necessary to browse through the database:
 		"view": True
 	},
 	"filesystem": {
+		# This permission is necessary to browse through the server filesystem:
 		"view": True
 	},
+	# This permission is necessary to search:
 	"search": True,
 	"stored_playlists": {
+		# This permission is necessary to view the stored playlists:
 		"view": True,
+		# This permission is necessary to load a stored playlist into the
+		# current playlist:
 		"load": False,
+		# This permission is necessary to remove a stored playlist,
+		# use carefully if you have important playlists on the server:
 		"remove": False
 	}
 }
