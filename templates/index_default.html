@@ -8,6 +8,10 @@
 		<link rel="stylesheet" type="text/css" href="res/default.css" />
 	</head>
 	<body onload="DefaultJS.init();">
+		<div id="playlist_saver_dialog" class="invisible" title="Save current playlist">
+			<label for="playlist_saver_name">Name:</label>
+			<input type="text" id="playlist_saver_name" />
+		</div>
 		<div id="leftrow">
 			<div id="leftrow_box1">
 				{% if loggedin %}{{ username }} - <a href="index.py?page=logout">Logout</a>{% else %}Guest - <a href="index.py?page=login">Login</a>{% endif %}
@@ -63,6 +67,7 @@
 					</p>
 					<div id="player_playlist_notempty" class="invisible">
 						<a href="#clear" id="playlist_clear_link" class="invisible" onclick="return !DefaultJS.clear_playlist();"><img src="res/img/edit-clear.png" width="32" height="32" alt="Clear playlist" title="Clear playlist" /></a>
+						<a href="#save" id="playlist_save_link" class="invisible" onclick="return !DefaultJS.show_playlist_saver();"><img src="res/img/media-floppy.png" width="32" height="32" alt="Save playlist" title="Save playlist" /></a>
 						<table id="player_playlist">
 							<thead>
 								<tr>

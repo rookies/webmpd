@@ -89,7 +89,8 @@ default_permissions = {
 			"file": False,
 			"artist": False,
 			"album": False
-		}
+		},
+		"save": False
 	},
 	"database": {
 		"view": True

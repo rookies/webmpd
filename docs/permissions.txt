@@ -29,6 +29,8 @@ playlist.add.artist
 	addartist
 playlist.add.album
 	addalbum
+playlist.save
+	save
 database.view
 	artists
 	albums

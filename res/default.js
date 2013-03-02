@@ -113,6 +113,36 @@ var DefaultJS = {
 			},
 			disabled: true
 		});
+		$("#playlist_saver_dialog").dialog({
+			autoOpen: false,
+			width: 400,
+			buttons: [
+				{
+					text: "Cancel",
+					click: function () {
+						$(this).dialog("close");
+					}
+				},
+				{
+					text: "Save",
+					click: function () {
+						var name = $("#playlist_saver_name").prop("value");
+						name = name.replace(/^\s+|\s+$/g, '');
+						if (name == '')
+							alert('Please enter a name for the playlist!');
+						else
+						{
+							DefaultJS.save_playlist(name);
+							$(this).dialog("close");
+						};
+					}
+				}
+			],
+			open: function (event, ui) {
+				$("#playlist_saver_name").prop("value", "");
+			}
+		});
+		$("#playlist_saver_dialog").removeClass("invisible");
 	},
 	get_permissions: function ()
 	{
@@ -182,6 +212,17 @@ var DefaultJS = {
 			else
 			{
 				$("#playlist_clear_link").addClass("invisible");
+			};
+			/*
+			 * playlist.save
+			*/
+			if (data.playlist.save)
+			{
+				$("#playlist_save_link").removeClass("invisible");
+			}
+			else
+			{
+				$("#playlist_save_link").addClass("invisible");
 			};
 			/*
 			 * database.view
@@ -941,6 +982,18 @@ var DefaultJS = {
 			$("#stored_playlist_items li").remove();
 			DefaultJS.list_playlists();
 			DefaultJS.show_status('Successfully deleted the stored playlist <em>' + name + '</em>!');
+		});
+		return true;
+	},
+	show_playlist_saver: function ()
+	{
+		$("#playlist_saver_dialog").dialog("open");
+		return true;
+	},
+	save_playlist: function (name)
+	{
+		$.get('ajax.py?action=save&name=' + name, function (data) {
+			DefaultJS.show_status('Playlist successfully saved as <em>' + name + '</em>!');
 		});
 		return true;
 	}
