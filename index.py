@@ -157,7 +157,7 @@ if __name__ == "__main__":
 		print("Status: 500")
 		print("Content-Type: text/plain")
 		print("")
-		traceback.print_last()
+		traceback.print_exc()
 	else:
 		print("Status: " + str(res["status"]))
 		for key, val in res["headers"].items():

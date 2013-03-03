@@ -440,11 +440,11 @@ if __name__ == "__main__":
 		ajax.mpd_connect()
 		res = ajax.handle_request(qs)
 		ajax.mpd_disconnect()
-	except BaseException as e:
+	except:
 		print("Status: 500")
 		print("Content-Type: text/plain")
 		print("")
-		traceback.print_last()
+		traceback.print_exc()
 	else:
 		print("Status: 200")
 		print("Content-Type: text/html")

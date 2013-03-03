@@ -46,7 +46,7 @@ class WebMPD_FastCGI(object):
 				except:
 					start_response('500 Internal Server Error', [('Content-Type', 'text/plain')])
 					s = io.StringIO()
-					traceback.print_last(file=s)
+					traceback.print_exc(file=s)
 					return s.getvalue()
 				else:
 					start_response('200 OK', [('Content-Type', 'text/html')])
@@ -58,7 +58,7 @@ class WebMPD_FastCGI(object):
 				except:
 					start_response('500 Internal Server Error', [('Content-Type', 'text/plain')])
 					s = io.StringIO()
-					traceback.print_last(file=s)
+					traceback.print_exc(file=s)
 					return s.getvalue()
 				else:
 					start_response(str(res["status"]) + ' ' + self.responses[res["status"]], list(res["headers"].items()))
