@@ -638,7 +638,7 @@ var DefaultJS = {
 		/*
 		 * Receive albums:
 		*/
-		$.getJSON('ajax.py?action=albums&artist=' + artist + ((all==true)?'&all':''), function (data) {
+		$.getJSON('ajax.py?action=albums&artist=' + encodeURIComponent(artist) + ((all==true)?'&all':''), function (data) {
 			var i;
 			if (all == true)
 				$("#database_table_albums").append('<li><a href="#songs" onclick="return !DefaultJS.get_songs(\'\', \'\', false, true);">ALL SONGS</a></li>');
@@ -678,7 +678,7 @@ var DefaultJS = {
 		/*
 		 * Receive songs:
 		*/
-		$.getJSON('ajax.py?action=songs&artist=' + artist + '&album=' + album + ((all_artist==true)?'&all_artist':'') + ((all==true)?'&all':''), function (data) {
+		$.getJSON('ajax.py?action=songs&artist=' + encodeURIComponent(artist) + '&album=' + encodeURIComponent(album) + ((all_artist==true)?'&all_artist':'') + ((all==true)?'&all':''), function (data) {
 			var i;
 			if (all)
 				$("#database_table_songs_header").html("All Songs");
@@ -712,7 +712,7 @@ var DefaultJS = {
 	},
 	addto_playlist: function (file)
 	{
-		$.getJSON('ajax.py?action=add&file=' + file, function (data) {
+		$.getJSON('ajax.py?action=add&file=' + encodeURIComponent(file), function (data) {
 			DefaultJS.get_status();
 			/*
 			 * Show status:
@@ -729,7 +729,7 @@ var DefaultJS = {
 	},
 	addto_playlist_artist: function (artist)
 	{
-		$.get('ajax.py?action=addartist&artist=' + artist, function (data) {
+		$.get('ajax.py?action=addartist&artist=' + encodeURIComponent(artist), function (data) {
 			DefaultJS.get_status();
 			/*
 			 * Show status:
@@ -740,7 +740,7 @@ var DefaultJS = {
 	},
 	addto_playlist_album: function (album, artist)
 	{
-		$.get('ajax.py?action=addalbum&album=' + album + ((artist!=null)?('&artist=' + artist):''), function (data) {
+		$.get('ajax.py?action=addalbum&album=' + encodeURIComponent(album) + ((artist!=null)?('&artist=' + encodeURIComponent(artist)):''), function (data) {
 			DefaultJS.get_status();
 			/*
 			 * Show status:
@@ -809,7 +809,7 @@ var DefaultJS = {
 	{
 		if (path == null)
 			path = "";
-		$.getJSON('ajax.py?action=ls&path=' + path, function (data) {
+		$.getJSON('ajax.py?action=ls&path=' + encodeURIComponent(path), function (data) {
 			var i;
 			$("#filesystem_list li").remove();
 			/*
@@ -879,7 +879,7 @@ var DefaultJS = {
 	},
 	advanced_search: function ()
 	{
-		$.getJSON('ajax.py?action=search&any=' + $("#advanced_search_any").prop('value') + '&artist=' + $("#advanced_search_artist").prop('value') + '&title=' + $("#advanced_search_title").prop('value') + '&album=' + $("#advanced_search_album").prop('value') + '&file=' + $("#advanced_search_filename").prop('value') + '&composer=' + $("#advanced_search_composer").prop('value') + '&performer=' + $("#advanced_search_performer").prop('value') + '&genre=' + $("#advanced_search_genre").prop('value') + '&date=' + $("#advanced_search_year").prop('value') + '&comment=' + $("#advanced_search_comment").prop('value'), function (data) {
+		$.getJSON('ajax.py?action=search&any=' + encodeURIComponent($("#advanced_search_any").prop('value')) + '&artist=' + encodeURIComponent($("#advanced_search_artist").prop('value')) + '&title=' + encodeURIComponent($("#advanced_search_title").prop('value')) + '&album=' + encodeURIComponent($("#advanced_search_album").prop('value')) + '&file=' + encodeURIComponent($("#advanced_search_filename").prop('value')) + '&composer=' + encodeURIComponent($("#advanced_search_composer").prop('value')) + '&performer=' + encodeURIComponent($("#advanced_search_performer").prop('value')) + '&genre=' + encodeURIComponent($("#advanced_search_genre").prop('value')) + '&date=' + encodeURIComponent($("#advanced_search_year").prop('value')) + '&comment=' + encodeURIComponent($("#advanced_search_comment").prop('value')), function (data) {
 			if (data.length == 0)
 			{
 				/*
@@ -931,7 +931,7 @@ var DefaultJS = {
 	},
 	list_playlist_items: function (name)
 	{
-		$.getJSON('ajax.py?action=listplaylistinfo&name=' + name, function (data) {
+		$.getJSON('ajax.py?action=listplaylistinfo&name=' + encodeURIComponent(name), function (data) {
 			var i;
 			$("#stored_playlists_table_items_header").html('Items (' + name + ')');
 			$("#stored_playlist_items li").remove();
@@ -950,7 +950,7 @@ var DefaultJS = {
 	},
 	load_stored: function (name)
 	{
-		$.get('ajax.py?action=load&name=' + name, function (data) {
+		$.get('ajax.py?action=load&name=' + encodeURIComponent(name), function (data) {
 			DefaultJS.get_status();
 			DefaultJS.show_status('All songs of the stored playlist <em>' + name + '</em> successfully added to playlist!');
 		});
@@ -964,7 +964,7 @@ var DefaultJS = {
 		}
 		else
 		{
-			$.get('ajax.py?action=rm&name=' + name, function (data) {
+			$.get('ajax.py?action=rm&name=' + encodeURIComponent(name), function (data) {
 				$("#stored_playlists_table_items_header").html('Items');
 				$("#stored_playlist_items li").remove();
 				DefaultJS.list_playlists();
@@ -993,7 +993,7 @@ var DefaultJS = {
 	},
 	save_playlist: function (name)
 	{
-		$.get('ajax.py?action=save&name=' + name, function (data) {
+		$.get('ajax.py?action=save&name=' + encodeURIComponent(name), function (data) {
 			DefaultJS.show_status('Playlist successfully saved as <em>' + name + '</em>!');
 		});
 		return true;
