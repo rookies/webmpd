@@ -20,16 +20,6 @@
 #  
 #
 
-## IMPORT EXCEPTION HANDLER:
-try:
-	import libs.handler as handler
-except BaseException as e:
-	print("Content-Type: text/html")
-	print("Status: 500")
-	print("")
-	print("Failed to import Handler library!")
-	print(e)
-	exit()
 ## IMPORT STANDARD LIBRARIES:
 import json, os, urllib.parse, sys, time
 ## IMPORT DELIVERED LIBRARIES:
@@ -37,400 +27,413 @@ import libs.config as config
 import libs.mpd as mpd
 import libs.usermanager as usermanager
 
-## GLOBAL VARIABLES:
-MPD_CLIENT = mpd.MPDClient()
-## DEFINE FUNCTIONS:
-def send_error(code, message):
-	print(json.dumps({
-		"status": "error",
-		"code": code,
-		"message": message
-	}))
-	sys.exit()
-def mpd_connect():
-	MPD_CLIENT.timeout = config.timeout
-	MPD_CLIENT.idletimeout = config.idletimeout
-	MPD_CLIENT.connect(config.host, config.port)
-	if config.password is not None:
-		MPD_CLIENT.password(config.password)
-def mpd_disconnect():
-	MPD_CLIENT.close()
-def check_permission(name):
-	if usermanager.get_permission(name):
-		return True
-	send_error(201, "Action not allowed! You need permission '%s'!" % name)
-	return False
-## PARSE QUERY STRING:
-qs = urllib.parse.parse_qs(os.getenv("QUERY_STRING"), keep_blank_values=True)
-## CHECK ACCESS PERMISSION:
-check_permission("access")
-## CHECK ACTION ARGUMENT:
-if not "action" in qs:
-	send_error(100, "No action specified!")
-else:
-	action = qs["action"][0]
-	if action == "permissions":
-		print(json.dumps(usermanager.get_permissions()))
-	elif action == "currentsong":
-		check_permission("playback.view")
-		mpd_connect()
-		print(json.dumps(MPD_CLIENT.currentsong()))
-		mpd_disconnect()
-	elif action == "status":
-		check_permission("playback.view")
-		mpd_connect()
-		print(json.dumps(MPD_CLIENT.status()))
-		mpd_disconnect()
-	elif action == "stats":
-		check_permission("stats")
-		mpd_connect()
-		res = MPD_CLIENT.stats()
-		res["db_update"] = time.mktime(time.localtime())-int(res["db_update"])
-		print(json.dumps(res))
-		mpd_disconnect()
-	elif action == "pause":
-		check_permission("playback.control")
-		mpd_connect()
-		print(json.dumps(MPD_CLIENT.pause()))
-		mpd_disconnect()
-	elif action == "play":
-		check_permission("playback.control")
-		mpd_connect()
-		print(json.dumps(MPD_CLIENT.play()))
-		mpd_disconnect()
-	elif action == "stop":
-		check_permission("playback.control")
-		mpd_connect()
-		print(json.dumps(MPD_CLIENT.stop()))
-		mpd_disconnect()
-	elif action == "setvol":
-		check_permission("playback.change_options")
-		try:
-			value = int(qs["value"][0])
-		except:
-			send_error(102, "Invalid argument!")
+class WebMPD_Ajax(object):
+	mpd = mpd.MPDClient()
+	cookie_env = None
+
+	def get_error(self, code, message):
+		return json.dumps({
+			"status": "error",
+			"code": code,
+			"message": message
+		})
+		sys.exit()
+	def mpd_connect(self):
+		self.mpd.timeout = config.timeout
+		self.mpd.idletimeout = config.idletimeout
+		self.mpd.connect(config.host, config.port)
+		if config.password is not None:
+			self.mpd.password(config.password)
+	def mpd_disconnect(self):
+		self.mpd.close()
+	def check_permission(self, name):
+		if usermanager.get_permission(self.cookie_env, name):
+			return None
+		return self.get_error(201, "Action not allowed! You need permission '%s'!" % name)
+	def handle_request(self, qs, environ=None):
+		## Get cookie_env:
+		if environ is None:
+			self.cookie_env = os.getenv("HTTP_COOKIE")
 		else:
-			mpd_connect()
-			print(json.dumps(MPD_CLIENT.setvol(value)))
-			mpd_disconnect()
-	elif action == "setxfade":
-		check_permission("playback.change_options")
-		try:
-			value = int(qs["value"][0])
-		except:
-			send_error(102, "Invalid argument!")
+			if "HTTP_COOKIE" in environ:
+				self.cookie_env = environ["HTTP_COOKIE"]
+			else:
+				self.cookie_env = ""
+		
+		res = self.check_permission("access")
+		if res is not None:
+			return res
+		if not "action" in qs:
+			return self.get_error(100, "No action specified!")
 		else:
-			mpd_connect()
-			print(json.dumps(MPD_CLIENT.crossfade(value)))
-			mpd_disconnect()
-	elif action == "seek":
-		check_permission("playback.control")
-		try:
-			value = int(qs["value"][0])
-		except:
-			send_error(102, "Invalid argument!")
-		else:
-			mpd_connect()
-			print(json.dumps(MPD_CLIENT.seek(0, value)))
-			mpd_disconnect()
-	elif action == "prev":
-		check_permission("playback.control")
-		mpd_connect()
-		print(json.dumps(MPD_CLIENT.previous()))
-		mpd_disconnect()
-	elif action == "next":
-		check_permission("playback.control")
-		mpd_connect()
-		print(json.dumps(MPD_CLIENT.next()))
-		mpd_disconnect()
-	elif action == "update_modifiers":
-		check_permission("playback.change_options")
-		mpd_connect()
-		MPD_CLIENT.command_list_ok_begin()
-		# repeat:
-		try:
-			if int(qs["repeat"][0]) == 1:
-				MPD_CLIENT.repeat(1)
-			else:
-				MPD_CLIENT.repeat(0)
-		except:
-			pass
-		# random:
-		try:
-			if int(qs["random"][0]) == 1:
-				MPD_CLIENT.random(1)
-			else:
-				MPD_CLIENT.random(0)
-		except:
-			pass
-		# single:
-		try:
-			if int(qs["single"][0]) == 1:
-				MPD_CLIENT.single(1)
-			else:
-				MPD_CLIENT.single(0)
-		except:
-			pass
-		# consume:
-		try:
-			if int(qs["consume"][0]) == 1:
-				MPD_CLIENT.consume(1)
-			else:
-				MPD_CLIENT.consume(0)
-		except:
-			pass
-		# send commands & disconnect:
-		print(json.dumps(MPD_CLIENT.command_list_end()))
-		mpd_disconnect()
-	elif action == "playlist":
-		check_permission("playback.view")
-		mpd_connect()
-		print(json.dumps(MPD_CLIENT.playlistinfo()))
-		mpd_disconnect()
-	elif action == "moveid":
-		check_permission("playlist.change")
-		try:
-			fr = int(qs["from"][0])
-		except:
-			send_error(102, "Invalid argument!")
-		else:
-			try:
-				to = int(qs["to"][0])
-			except:
-				send_error(102, "Invalid argument!")
-			else:
-				mpd_connect()
-				print(json.dumps(MPD_CLIENT.moveid(fr, to)))
-				mpd_disconnect()
-	elif action == "deleteid":
-		check_permission("playlist.change")
-		try:
-			id_ = int(qs["id"][0])
-		except:
-			send_error(102, "Invalid argument!")
-		else:
-			mpd_connect()
-			print(json.dumps(MPD_CLIENT.deleteid(id_)))
-			mpd_disconnect()
-	elif action == "artists":
-		check_permission("database.view")
-		mpd_connect()
-		print(json.dumps(MPD_CLIENT.list("artist")))
-		mpd_disconnect()
-	elif action == "albums":
-		check_permission("database.view")
-		if "all" in qs:
-			mpd_connect()
-			print(json.dumps(MPD_CLIENT.list("album")))
-			mpd_disconnect()
-		else:
-			try:
-				artist = qs["artist"][0]
-			except:
-				send_error(102, "Invalid argument!")
-			else:
-				mpd_connect()
-				print(json.dumps(MPD_CLIENT.list("album", artist)))
-				mpd_disconnect()
-	elif action == "songs":
-		check_permission("database.view")
-		if "all" in qs:
-			mpd_connect()
-			res = MPD_CLIENT.listallinfo()
-			res2 = []
-			for item in res:
-				if "file" in item:
-					res2.append(item)
-			print(json.dumps(res2))
-			mpd_disconnect()
-		elif "all_artist" in qs:
-			try:
-				artist = qs["artist"][0]
-			except:
-				send_error(102, "Invalid argument!")
-			else:
-				mpd_connect()
-				print(json.dumps(MPD_CLIENT.find("artist", artist)))
-				mpd_disconnect()
-		else:
-			try:
-				artist = qs["artist"][0]
-			except:
-				send_error(102, "Invalid argument!")
-			else:
+			action = qs["action"][0]
+			if action == "permissions":
+				return json.dumps(usermanager.get_permissions(self.cookie_env))
+			elif action == "currentsong":
+				res = res = self.check_permission("playback.view")
+				if res is not None:
+					return res
+				return json.dumps(self.mpd.currentsong())
+			elif action == "status":
+				res = self.check_permission("playback.view")
+				if res is not None:
+					return res
+				return json.dumps(self.mpd.status())
+			elif action == "stats":
+				res = self.check_permission("stats")
+				if res is not None:
+					return res
+				res = self.mpd.stats()
+				res["db_update"] = time.mktime(time.localtime())-int(res["db_update"])
+				return json.dumps(res)
+			elif action == "pause":
+				res = self.check_permission("playback.control")
+				if res is not None:
+					return res
+				return json.dumps(self.mpd.pause())
+			elif action == "play":
+				res = self.check_permission("playback.control")
+				if res is not None:
+					return res
+				return json.dumps(self.mpd.play())
+			elif action == "stop":
+				res = self.check_permission("playback.control")
+				if res is not None:
+					return res
+				return json.dumps(self.mpd.stop())
+			elif action == "setvol":
+				res = self.check_permission("playback.change_options")
+				if res is not None:
+					return res
+				try:
+					value = int(qs["value"][0])
+				except:
+					return self.get_error(102, "Invalid argument!")
+				else:
+					return json.dumps(self.mpd.setvol(value))
+			elif action == "setxfade":
+				res = self.check_permission("playback.change_options")
+				if res is not None:
+					return res
+				try:
+					value = int(qs["value"][0])
+				except:
+					return self.get_error(102, "Invalid argument!")
+				else:
+					return json.dumps(self.mpd.crossfade(value))
+			elif action == "seek":
+				res = self.check_permission("playback.control")
+				if res is not None:
+					return res
+				try:
+					value = int(qs["value"][0])
+				except:
+					return self.get_error(102, "Invalid argument!")
+				else:
+					return json.dumps(self.mpd.seek(0, value))
+			elif action == "prev":
+				res = self.check_permission("playback.control")
+				if res is not None:
+					return res
+				return json.dumps(self.mpd.previous())
+			elif action == "next":
+				res = self.check_permission("playback.control")
+				if res is not None:
+					return res
+				return json.dumps(self.mpd.next())
+			elif action == "update_modifiers":
+				res = self.check_permission("playback.change_options")
+				if res is not None:
+					return res
+				self.mpd.command_list_ok_begin()
+				# repeat:
+				try:
+					if int(qs["repeat"][0]) == 1:
+						self.mpd.repeat(1)
+					else:
+						self.mpd.repeat(0)
+				except:
+					pass
+				# random:
+				try:
+					if int(qs["random"][0]) == 1:
+						self.mpd.random(1)
+					else:
+						self.mpd.random(0)
+				except:
+					pass
+				# single:
+				try:
+					if int(qs["single"][0]) == 1:
+						self.mpd.single(1)
+					else:
+						self.mpd.single(0)
+				except:
+					pass
+				# consume:
+				try:
+					if int(qs["consume"][0]) == 1:
+						self.mpd.consume(1)
+					else:
+						self.mpd.consume(0)
+				except:
+					pass
+				# send commands & disconnect:
+				return json.dumps(self.mpd.command_list_end())
+			elif action == "playlist":
+				res = self.check_permission("playback.view")
+				if res is not None:
+					return res
+				return json.dumps(self.mpd.playlistinfo())
+			elif action == "moveid":
+				res = self.check_permission("playlist.change")
+				if res is not None:
+					return res
+				try:
+					fr = int(qs["from"][0])
+				except:
+					return self.get_error(102, "Invalid argument!")
+				else:
+					try:
+						to = int(qs["to"][0])
+					except:
+						return self.get_error(102, "Invalid argument!")
+					else:
+						return json.dumps(self.mpd.moveid(fr, to))
+			elif action == "deleteid":
+				res = self.check_permission("playlist.change")
+				if res is not None:
+					return res
+				try:
+					id_ = int(qs["id"][0])
+				except:
+					return self.get_error(102, "Invalid argument!")
+				else:
+					return json.dumps(self.mpd.deleteid(id_))
+			elif action == "artists":
+				res = self.check_permission("database.view")
+				if res is not None:
+					return res
+				return json.dumps(self.mpd.list("artist"))
+			elif action == "albums":
+				res = self.check_permission("database.view")
+				if res is not None:
+					return res
+				if "all" in qs:
+					return json.dumps(self.mpd.list("album"))
+				else:
+					try:
+						artist = qs["artist"][0]
+					except:
+						return self.get_error(102, "Invalid argument!")
+					else:
+						return json.dumps(self.mpd.list("album", artist))
+			elif action == "songs":
+				res = self.check_permission("database.view")
+				if res is not None:
+					return res
+				if "all" in qs:
+					res = self.mpd.listallinfo()
+					res2 = []
+					for item in res:
+						if "file" in item:
+							res2.append(item)
+					return json.dumps(res2)
+				elif "all_artist" in qs:
+					try:
+						artist = qs["artist"][0]
+					except:
+						return self.get_error(102, "Invalid argument!")
+					else:
+						return json.dumps(self.mpd.find("artist", artist))
+				else:
+					try:
+						artist = qs["artist"][0]
+					except:
+						return self.get_error(102, "Invalid argument!")
+					else:
+						try:
+							album = qs["album"][0]
+						except:
+							return self.get_error(102, "Invalid argument!")
+						else:
+							if artist == "":
+								return json.dumps(self.mpd.find("album", album))
+							else:
+								return json.dumps(self.mpd.find("artist", artist, "album", album))
+			elif action == "add":
+				res = self.check_permission("playlist.add.file")
+				if res is not None:
+					return res
+				try:
+					f = qs["file"][0]
+				except:
+					return self.get_error(102, "Invalid argument!")
+				else:
+					res = self.mpd.findadd("file", f)
+					if (res == None):
+						return json.dumps(self.mpd.lsinfo(f)[0])
+					else:
+						return json.dumps(res)
+			elif action == "addartist":
+				res = self.check_permission("playlist.add.artist")
+				if res is not None:
+					return res
+				try:
+					artist = qs["artist"][0]
+				except:
+					return self.get_error(102, "Invalid argument!")
+				else:
+					return json.dumps(self.mpd.findadd("artist", artist))
+			elif action == "addalbum":
+				res = self.check_permission("playlist.add.album")
+				if res is not None:
+					return res
 				try:
 					album = qs["album"][0]
 				except:
-					send_error(102, "Invalid argument!")
+					return self.get_error(102, "Invalid argument!")
 				else:
-					mpd_connect()
-					if artist == "":
-						print(json.dumps(MPD_CLIENT.find("album", album)))
+					try:
+						artist = qs["artist"][0]
+					except:
+						## no artist given
+						return json.dumps(self.mpd.findadd("album", album))
 					else:
-						print(json.dumps(MPD_CLIENT.find("artist", artist, "album", album)))
-					mpd_disconnect()
-	elif action == "add":
-		check_permission("playlist.add.file")
-		try:
-			f = qs["file"][0]
-		except:
-			send_error(102, "Invalid argument!")
-		else:
-			mpd_connect()
-			res = MPD_CLIENT.findadd("file", f)
-			if (res == None):
-				print(json.dumps(MPD_CLIENT.lsinfo(f)[0]))
+						## artist given
+						return json.dumps(self.mpd.findadd("artist", artist, "album", album))
+			elif action == "playid":
+				res = self.check_permission("playback.control")
+				if res is not None:
+					return res
+				try:
+					id_ = int(qs["id"][0])
+				except:
+					return self.get_error(102, "Invalid argument!")
+				else:
+					return json.dumps(self.mpd.playid(id_))
+			elif action == "clear":
+				res = self.check_permission("playlist.clear")
+				if res is not None:
+					return res
+				return json.dumps(self.mpd.clear())
+			elif action == "ls":
+				res = self.check_permission("filesystem.view")
+				if res is not None:
+					return res
+				try:
+					path = qs["path"][0]
+				except:
+					return self.get_error(102, "Invalid argument!")
+				else:
+					try:
+						res = self.mpd.lsinfo(path)
+					except mpd.CommandError:
+						return json.dumps([])
+					else:
+						res2 = []
+						for item in res:
+							if "directory" in item or "file" in item:
+								res2.append(item)
+						return json.dumps(res2)
+			elif action == "search":
+				res = self.check_permission("search")
+				if res is not None:
+					return res
+				arg_keys = [ "any", "artist", "title", "album", "file", "composer", "performer", "genre", "date", "comment"]
+				args = []
+				for key in arg_keys:
+					try:
+						arg = qs[key][0]
+						assert(arg != "")
+					except:
+						pass
+					else:
+						args.extend([key, arg])
+				if len(args) is 0:
+					return json.dumps([])
+				else:
+					return json.dumps(self.mpd.search(*args))
+			elif action == "listplaylists":
+				res = self.check_permission("stored_playlists.view")
+				if res is not None:
+					return res
+				return json.dumps(self.mpd.listplaylists())
+			elif action == "listplaylistinfo":
+				res = self.check_permission("stored_playlists.view")
+				if res is not None:
+					return res
+				try:
+					name = qs["name"][0]
+				except:
+					return self.get_error(102, "Invalid argument!")
+				else:
+					return json.dumps(self.mpd.listplaylistinfo(name))
+			elif action == "load":
+				res = self.check_permission("stored_playlists.load")
+				if res is not None:
+					return res
+				try:
+					name = qs["name"][0]
+				except:
+					return self.get_error(102, "Invalid argument!")
+				else:
+					return json.dumps(self.mpd.load(name))
+			elif action == "rm":
+				res = self.check_permission("stored_playlists.remove")
+				if res is not None:
+					return res
+				try:
+					name = qs["name"][0]
+				except:
+					return self.get_error(102, "Invalid argument!")
+				else:
+					return json.dumps(self.mpd.rm(name))
+			elif action == "save":
+				res = self.check_permission("playlist.save")
+				if res is not None:
+					return res
+				try:
+					name = qs["name"][0]
+				except:
+					return self.get_error(102, "Invalid argument!")
+				else:
+					return json.dumps(self.mpd.save(name))
+			elif action == "outputs":
+				res = self.check_permission("outputs.view")
+				if res is not None:
+					return res
+				return json.dumps(self.mpd.outputs())
+			elif action == "disableoutput":
+				res = self.check_permission("outputs.disable")
+				if res is not None:
+					return res
+				try:
+					id_ = int(qs["id"][0])
+				except:
+					return self.get_error(102, "Invalid argument!")
+				else:
+					return json.dumps(self.mpd.disableoutput(id_))
+			elif action == "enableoutput":
+				res = self.check_permission("outputs.enable")
+				if res is not None:
+					return res
+				try:
+					id_ = int(qs["id"][0])
+				except:
+					return self.get_error(102, "Invalid argument!")
+				else:
+					return json.dumps(self.mpd.enableoutput(id_))
 			else:
-				print(json.dumps(res))
-			mpd_disconnect()
-	elif action == "addartist":
-		check_permission("playlist.add.artist")
-		try:
-			artist = qs["artist"][0]
-		except:
-			send_error(102, "Invalid argument!")
-		else:
-			mpd_connect()
-			print(json.dumps(MPD_CLIENT.findadd("artist", artist)))
-			mpd_disconnect()
-	elif action == "addalbum":
-		check_permission("playlist.add.album")
-		try:
-			album = qs["album"][0]
-		except:
-			send_error(102, "Invalid argument!")
-		else:
-			mpd_connect()
-			try:
-				artist = qs["artist"][0]
-			except:
-				## no artist given
-				print(json.dumps(MPD_CLIENT.findadd("album", album)))
-			else:
-				## artist given
-				print(json.dumps(MPD_CLIENT.findadd("artist", artist, "album", album)))
-			mpd_disconnect()
-	elif action == "playid":
-		check_permission("playback.control")
-		try:
-			id_ = int(qs["id"][0])
-		except:
-			send_error(102, "Invalid argument!")
-		else:
-			mpd_connect()
-			print(json.dumps(MPD_CLIENT.playid(id_)))
-			mpd_disconnect()
-	elif action == "clear":
-		check_permission("playlist.clear")
-		mpd_connect()
-		print(json.dumps(MPD_CLIENT.clear()))
-		mpd_disconnect()
-	elif action == "ls":
-		check_permission("filesystem.view")
-		try:
-			path = qs["path"][0]
-		except:
-			send_error(102, "Invalid argument!")
-		else:
-			mpd_connect()
-			try:
-				res = MPD_CLIENT.lsinfo(path)
-			except mpd.CommandError:
-				print(json.dumps([]))
-			else:
-				res2 = []
-				for item in res:
-					if "directory" in item or "file" in item:
-						res2.append(item)
-				print(json.dumps(res2))
-			mpd_disconnect()
-	elif action == "search":
-		check_permission("search")
-		arg_keys = [ "any", "artist", "title", "album", "file", "composer", "performer", "genre", "date", "comment"]
-		args = []
-		for key in arg_keys:
-			try:
-				arg = qs[key][0]
-				assert(arg != "")
-			except:
-				pass
-			else:
-				args.extend([key, arg])
-		if len(args) is 0:
-			print(json.dumps([]))
-		else:
-			mpd_connect()
-			print(json.dumps(MPD_CLIENT.search(*args)))
-			mpd_disconnect()
-	elif action == "listplaylists":
-		check_permission("stored_playlists.view")
-		mpd_connect()
-		print(json.dumps(MPD_CLIENT.listplaylists()))
-		mpd_disconnect()
-	elif action == "listplaylistinfo":
-		check_permission("stored_playlists.view")
-		try:
-			name = qs["name"][0]
-		except:
-			send_error(102, "Invalid argument!")
-		else:
-			mpd_connect()
-			print(json.dumps(MPD_CLIENT.listplaylistinfo(name)))
-			mpd_disconnect()
-	elif action == "load":
-		check_permission("stored_playlists.load")
-		try:
-			name = qs["name"][0]
-		except:
-			send_error(102, "Invalid argument!")
-		else:
-			mpd_connect()
-			print(json.dumps(MPD_CLIENT.load(name)))
-			mpd_disconnect()
-	elif action == "rm":
-		check_permission("stored_playlists.remove")
-		try:
-			name = qs["name"][0]
-		except:
-			send_error(102, "Invalid argument!")
-		else:
-			mpd_connect()
-			print(json.dumps(MPD_CLIENT.rm(name)))
-			mpd_disconnect()
-	elif action == "save":
-		check_permission("playlist.save")
-		try:
-			name = qs["name"][0]
-		except:
-			send_error(102, "Invalid argument!")
-		else:
-			mpd_connect()
-			print(json.dumps(MPD_CLIENT.save(name)))
-			mpd_disconnect()
-	elif action == "outputs":
-		check_permission("outputs.view")
-		mpd_connect()
-		print(json.dumps(MPD_CLIENT.outputs()))
-		mpd_disconnect()
-	elif action == "disableoutput":
-		check_permission("outputs.disable")
-		try:
-			id_ = int(qs["id"][0])
-		except:
-			send_error(102, "Invalid argument!")
-		else:
-			mpd_connect()
-			print(json.dumps(MPD_CLIENT.disableoutput(id_)))
-			mpd_disconnect()
-	elif action == "enableoutput":
-		check_permission("outputs.enable")
-		try:
-			id_ = int(qs["id"][0])
-		except:
-			send_error(102, "Invalid argument!")
-		else:
-			mpd_connect()
-			print(json.dumps(MPD_CLIENT.enableoutput(id_)))
-			mpd_disconnect()
-	else:
-		send_error(101, "Invalid action specified!")
+				return self.get_error(101, "Invalid action specified!")
+
+if __name__ == "__main__":
+	## HANDLE THE CGI REQUEST:
+	qs = urllib.parse.parse_qs(os.getenv("QUERY_STRING"), keep_blank_values=True)
+	ajax = WebMPD_Ajax()
+	ajax.mpd_connect()
+	print("Status: 200")
+	print("Content-Type: text/html")
+	print("")
+	print(ajax.handle_request(qs))
+	ajax.mpd_disconnect()

@@ -22,7 +22,6 @@
 import sys, hashlib, random, time, os
 sys.path.append("..")
 ## IMPORT DELIVERED LIBRARIES:
-import libs.handler as handler
 import libs.config as config
 ## IMPORT PYODBC:
 import pyodbc
@@ -37,9 +36,9 @@ def gen_sid ():
 		sid += random.choice(SID_CHARS)
 	return sid
 
-def get_cookies ():
+def get_cookies (cookie_env):
 	ret = {}
-	raw = os.getenv("HTTP_COOKIE")
+	raw = cookie_env
 	if raw is not None:
 		if raw.find(";") == -1:
 			if raw.find("=") == -1:
@@ -106,14 +105,14 @@ def login (username, password):
 			""", (sid, row[0], time.mktime(time.gmtime()), time.mktime(time.gmtime())))
 			cursor.commit()
 			## ... and set the cookie:
-			handler.set_header("Set-Cookie", "webmpd_sid=%s" % (sid))
-			## Finally, return success:
-			return True
+			return {
+				"Set-Cookie": "webmpd_sid=%s" % (sid)
+			}
 	## Login failed:
 	return False
 
-def get_permission (name):
-	permissions = get_permissions()
+def get_permission (cookie_env, name):
+	permissions = get_permissions(cookie_env)
 	if name.find(".") == -1:
 		if permissions[name]:
 			return True
@@ -126,11 +125,11 @@ def get_permission (name):
 			return True
 	return False
 
-def get_permissions ():
+def get_permissions (cookie_env):
 	## Set default permissions:
 	permissions = config.default_permissions
 	## Get session cookie:
-	cookies = get_cookies()
+	cookies = get_cookies(cookie_env)
 	if not "webmpd_sid" in cookies:
 		return permissions
 	## Get permissions from database:
@@ -181,8 +180,8 @@ def set_permissions_recursively (permissions, value):
 			ret[key] = value
 	return ret
 			
-def is_loggedin ():
-	cookies = get_cookies()
+def is_loggedin (cookie_env):
+	cookies = get_cookies(cookie_env)
 	if not "webmpd_sid" in cookies:
 		return False
 	database_connect()
@@ -202,8 +201,8 @@ def is_loggedin ():
 	else:
 		return False
 
-def get_username ():
-	cookies = get_cookies()
+def get_username (cookie_env):
+	cookies = get_cookies(cookie_env)
 	if not "webmpd_sid" in cookies:
 		return None
 	database_connect()
@@ -223,8 +222,8 @@ def get_username ():
 	""", (cookies["webmpd_sid"], )).fetchone()
 	return row[1]
 
-def logout ():
-	cookies = get_cookies()
+def logout (cookie_env):
+	cookies = get_cookies(cookie_env)
 	if not "webmpd_sid" in cookies:
 		return False
 	database_connect()
@@ -240,5 +239,6 @@ def logout ():
 	""", (cookies["webmpd_sid"], ))
 	cursor.commit()
 	## And delete the cookie:
-	handler.set_header("Set-Cookie", "webmpd_sid=; Expires=Thu, 01-Jan-1970 00:00:01 GMT")
-	return True
+	return {
+		"Set-Cookie": "webmpd_sid=; Expires=Thu, 01-Jan-1970 00:00:01 GMT"
+	}
