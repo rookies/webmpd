@@ -106,7 +106,9 @@ default_permissions = {
 			"album": False
 		},
 		# This permission is necessary to save the current playlist as a stored playlist:
-		"save": False
+		"save": False,
+		# This permission is necessary to shuffle the current playlist:
+		"shuffle": False
 	},
 	"database": {
 		# This permission is necessary to browse through the database:

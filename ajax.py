@@ -424,6 +424,11 @@ class WebMPD_Ajax(object):
 					return self.get_error(102, "Invalid argument!")
 				else:
 					return json.dumps(self.mpd.enableoutput(id_))
+			elif action == "shuffle":
+				res = self.check_permission("playlist.shuffle")
+				if res is not None:
+					return res
+				return json.dumps(self.mpd.shuffle())
 			else:
 				return self.get_error(101, "Invalid action specified!")
 

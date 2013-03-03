@@ -204,6 +204,17 @@ var DefaultJS = {
 				$("#playlist_save_link").addClass("invisible");
 			};
 			/*
+			 * playlist.shuffle
+			*/
+			if (data.playlist.shuffle)
+			{
+				$("#playlist_shuffle_link").removeClass("invisible");
+			}
+			else
+			{
+				$("#playlist_shuffle_link").addClass("invisible");
+			};
+			/*
 			 * database.view
 			*/
 			if (data.database.view)
@@ -1200,5 +1211,12 @@ var DefaultJS = {
 			*/
 			$("#statistics_uptime").html(DefaultJS.format_time(parseInt(data.uptime)));
 		});
+	},
+	shuffle_playlist: function ()
+	{
+		$.get('ajax.py?action=shuffle', function (data) {
+			DefaultJS.get_status();
+		});
+		return true;
 	}
 }

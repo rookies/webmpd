@@ -30,6 +30,8 @@ playlist.add.album
 	addalbum
 playlist.save
 	save
+playlist.shuffle
+	shuffle
 database.view
 	artists
 	albums
