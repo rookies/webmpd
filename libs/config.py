@@ -59,8 +59,8 @@ timeout = 10
 
 ## Type: integer or None
 ## Description: The idle timeout for the connection with the MPD server.
-##   Normally we don't need to set this, because we close the connection
-##   a few moments after opening it.
+##   Normally, this is only necessary for FastCGI, because in CGI-mode,
+##   the connection gets closed a few moments after opening it.
 idletimeout = None
 
 ## Type: string
