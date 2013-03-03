@@ -39,11 +39,15 @@ class WebMPD_Ajax(object):
 		})
 		sys.exit()
 	def mpd_connect(self):
+		if self.mpd._sock is not None:
+			return False
+		self.mpd._reset()
 		self.mpd.timeout = config.timeout
 		self.mpd.idletimeout = config.idletimeout
 		self.mpd.connect(config.host, config.port)
 		if config.password is not None:
 			self.mpd.password(config.password)
+		return True
 	def mpd_disconnect(self):
 		self.mpd.close()
 	def check_permission(self, name):
@@ -51,6 +55,7 @@ class WebMPD_Ajax(object):
 			return None
 		return self.get_error(201, "Action not allowed! You need permission '%s'!" % name)
 	def handle_request(self, qs, environ=None):
+		self.mpd_connect()
 		## Get cookie_env:
 		if environ is None:
 			self.cookie_env = os.getenv("HTTP_COOKIE")
