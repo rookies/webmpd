@@ -595,9 +595,16 @@ var DefaultJS = {
 	},
 	remove_playlistitem: function (id)
 	{
-		$.get('ajax.py?action=deleteid&id=' + id, function (data) {
-			DefaultJS.get_status();
-		});
+		if (!confirm("Do you really want to delete this song from the playlist?"))
+		{
+			return true;
+		}
+		else
+		{
+			$.get('ajax.py?action=deleteid&id=' + id, function (data) {
+				DefaultJS.get_status();
+			});
+		};
 		return true;
 	},
 	get_artists: function ()
@@ -756,6 +763,7 @@ var DefaultJS = {
 				DefaultJS.show_status('All songs of the album <em>' + album + '</em> by <em>' + artist + '</em> successfully added to playlist!');
 			};
 		});
+		return true;
 	},
 	status_timeout: null,
 	show_status: function (status, type, timeout)
