@@ -46,3 +46,9 @@ stored_playlists.load
 	load
 stored_playlists.remove
 	rm
+outputs.view
+	outputs
+outputs.disable
+	disableoutput
+outputs.enable
+	enableoutput

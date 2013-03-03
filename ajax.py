@@ -405,5 +405,30 @@ else:
 			mpd_connect()
 			print(json.dumps(MPD_CLIENT.save(name)))
 			mpd_disconnect()
+	elif action == "outputs":
+		check_permission("outputs.view")
+		mpd_connect()
+		print(json.dumps(MPD_CLIENT.outputs()))
+		mpd_disconnect()
+	elif action == "disableoutput":
+		check_permission("outputs.disable")
+		try:
+			id_ = int(qs["id"][0])
+		except:
+			send_error(102, "Invalid argument!")
+		else:
+			mpd_connect()
+			print(json.dumps(MPD_CLIENT.disableoutput(id_)))
+			mpd_disconnect()
+	elif action == "enableoutput":
+		check_permission("outputs.enable")
+		try:
+			id_ = int(qs["id"][0])
+		except:
+			send_error(102, "Invalid argument!")
+		else:
+			mpd_connect()
+			print(json.dumps(MPD_CLIENT.enableoutput(id_)))
+			mpd_disconnect()
 	else:
 		send_error(101, "Invalid action specified!")

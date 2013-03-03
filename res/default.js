@@ -96,9 +96,13 @@ var DefaultJS = {
 						// Stored Playlists
 						DefaultJS.list_playlists();
 						break;
+					case "player_list_tabs-6":
+						// Audio Outputs
+						DefaultJS.list_outputs();
+						break;
 				}
 			},
-			disabled: [ 1, 2, 3, 4 ]
+			disabled: [ 1, 2, 3, 4, 5 ]
 		});
 		$("#player_playlist tbody").sortable({
 			stop: function (event, ui) {
@@ -240,6 +244,17 @@ var DefaultJS = {
 			else
 			{
 				$("#player_list_tabs").tabs("disable", 4);
+			};
+			/*
+			 * outputs.view
+			*/
+			if (data.outputs.view)
+			{
+				$("#player_list_tabs").tabs("enable", 5);
+			}
+			else
+			{
+				$("#player_list_tabs").tabs("disable", 5);
 			};
 		});
 	},
@@ -1034,6 +1049,32 @@ var DefaultJS = {
 		pos++;
 		// Send request:
 		DefaultJS.move_playlistitem(id, pos);
+		return true;
+	},
+	list_outputs: function ()
+	{
+		$.getJSON('ajax.py?action=outputs', function (data) {
+			var i;
+			$("#audio_outputs li").remove();
+			for (i=0; i < data.length; i++)
+			{
+				$("#audio_outputs").append('<li>' + (((data[i].outputenabled=='0' && DefaultJS.permissions.outputs.enable) || (data[i].outputenabled=='1' && DefaultJS.permissions.outputs.disable))?'<input type="checkbox" onclick="return DefaultJS.set_output(' + data[i].outputid + ', ' + (data[i].outputenabled=='0') + ');"' + ((data[i].outputenabled=='1')?' checked="checked"':'') + ' />':'') + ' ' + data[i].outputname + '</li>');
+			}
+		});
+	},
+	set_output: function (id, enabled)
+	{
+		if (enabled)
+			var action = 'enableoutput';
+		else
+			var action = 'disableoutput';
+		$.get('ajax.py?action=' + action + '&id=' + id, function (data) {
+			DefaultJS.list_outputs();
+			if (enabled)
+				DefaultJS.show_status('Output successfully enabled.');
+			else
+				DefaultJS.show_status('Output successfully disabled.');
+		});
 		return true;
 	}
 }

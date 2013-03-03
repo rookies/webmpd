@@ -127,5 +127,13 @@ default_permissions = {
 		# This permission is necessary to remove a stored playlist,
 		# use carefully if you have important playlists on the server:
 		"remove": False
+	},
+	"outputs": {
+		# This permission is needed to view the audio outputs:
+		"view": True,
+		# This permission is needed to disable audio outputs:
+		"disable": False,
+		# This permission is needed to enable audio outputs:
+		"enable": False
 	}
 }
