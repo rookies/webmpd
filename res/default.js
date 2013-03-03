@@ -698,7 +698,7 @@ var DefaultJS = {
 			data.sort();
 			for (i=0; i < data.length; i++)
 			{
-				$("#database_table_artists").append('<li>' + ((DefaultJS.permissions.playlist.add.artist)?'<a href="#add" onclick="return !DefaultJS.addto_playlist_artist(\'' + data[i].replace(/'/g, "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a>':'') + ' <a href="#albums" onclick="return !DefaultJS.get_albums(\'' + data[i].replace(/'/g, "\\'") + '\', false);">' + data[i] + '</a></li>');
+				$("#database_table_artists").append('<li>' + ((DefaultJS.permissions.playlist.add.artist)?'<a href="#add" onclick="return !DefaultJS.addto_playlist_artist(\'' + data[i].replace(/'/g, "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a>':'') + ' <a href="#albums" onclick="return !DefaultJS.get_albums(\'' + data[i].replace(/'/g, "\\'") + '\', false);">' + ((data[i])?data[i]:'[Unknown Artist]') + '</a></li>');
 			}
 		});
 	},
@@ -709,8 +709,10 @@ var DefaultJS = {
 		*/
 		if (all)
 			$("#database_table_albums_header").html("All Albums");
-		else
+		else if (artist)
 			$("#database_table_albums_header").html("Albums (" + artist + ")");
+		else
+			$("#database_table_albums_header").html("Albums ([Unknown Artist])");
 		$("#database_table_albums li").remove();
 		$("#database_table_songs li").remove();
 		$("#database_table_songs_header").html("Songs");
@@ -720,18 +722,18 @@ var DefaultJS = {
 		$.getJSON('ajax.py?action=albums&artist=' + encodeURIComponent(artist) + ((all==true)?'&all':''), function (data) {
 			var i;
 			if (all == true)
-				$("#database_table_albums").append('<li><a href="#songs" onclick="return !DefaultJS.get_songs(\'\', \'\', false, true);">ALL SONGS</a></li>');
+				$("#database_table_albums").append('<li><a href="#songs" onclick="return !DefaultJS.get_songs(\'\', \'\', false, false, true);">ALL SONGS</a></li>');
 			else
-				$("#database_table_albums").append('<li><a href="#songs" onclick="return !DefaultJS.get_songs(\'' + artist.replace(/'/g, "\\'") + '\', \'\', true, false);">ALL SONGS</a></li>');
+				$("#database_table_albums").append('<li><a href="#songs" onclick="return !DefaultJS.get_songs(\'' + artist.replace(/'/g, "\\'") + '\', \'\', true, false, false);">ALL SONGS</a></li>');
 			data.sort();
 			for (i=0; i < data.length; i++)
 			{
 				if (data[i] == "")
 				{
 					if (all == true)
-						$("#database_table_albums").append('<li>' + ((DefaultJS.permissions.playlist.add.album)?'<a href="#add" onclick="return !DefaultJS.addto_playlist_album(\'\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a>':'') + ' <a href="#songs" onclick="return !DefaultJS.get_songs(\'\', \'\', false, false);">[Unknown album]</a></li>');
+						$("#database_table_albums").append('<li>' + ((DefaultJS.permissions.playlist.add.album)?'<a href="#add" onclick="return !DefaultJS.addto_playlist_album(\'\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a>':'') + ' <a href="#songs" onclick="return !DefaultJS.get_songs(\'\', \'\', false, true, false);">[Unknown Album]</a></li>');
 					else
-						$("#database_table_albums").append('<li>' + ((DefaultJS.permissions.playlist.add.album)?'<a href="#add" onclick="return !DefaultJS.addto_playlist_album(\'\', \'' + artist.replace(/'/g, "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a>':'') + ' <a href="#songs" onclick="return !DefaultJS.get_songs(\'' + artist.replace(/'/g, "\\'") + '\', \'\', false, false);">[Unknown album]</a></li>');
+						$("#database_table_albums").append('<li>' + ((DefaultJS.permissions.playlist.add.album)?'<a href="#add" onclick="return !DefaultJS.addto_playlist_album(\'\', \'' + artist.replace(/'/g, "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a>':'') + ' <a href="#songs" onclick="return !DefaultJS.get_songs(\'' + artist.replace(/'/g, "\\'") + '\', \'\', false, false, false);">[Unknown Album]</a></li>');
 					break;
 				};
 			}
@@ -740,15 +742,15 @@ var DefaultJS = {
 				if (data[i] != "")
 				{
 					if (all == true)
-						$("#database_table_albums").append('<li>' + ((DefaultJS.permissions.playlist.add.album)?'<a href="#add" onclick="return !DefaultJS.addto_playlist_album(\'' + data[i].replace(/'/g, "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a>':'') + ' <a href="#songs" onclick="return !DefaultJS.get_songs(\'\', \'' + data[i].replace(/'/g, "\\'") + '\', false, false);">' + data[i] + '</a></li>');
+						$("#database_table_albums").append('<li>' + ((DefaultJS.permissions.playlist.add.album)?'<a href="#add" onclick="return !DefaultJS.addto_playlist_album(\'' + data[i].replace(/'/g, "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a>':'') + ' <a href="#songs" onclick="return !DefaultJS.get_songs(\'\', \'' + data[i].replace(/'/g, "\\'") + '\', false, false, false);">' + data[i] + '</a></li>');
 					else
-						$("#database_table_albums").append('<li>' + ((DefaultJS.permissions.playlist.add.album)?'<a href="#add" onclick="return !DefaultJS.addto_playlist_album(\'' + data[i].replace(/'/g, "\\'") + '\', \'' + artist.replace(/'/g, "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a>':'') + ' <a href="#songs" onclick="return !DefaultJS.get_songs(\'' + artist.replace(/'/g, "\\'") + '\', \'' + data[i].replace(/'/g, "\\'") + '\', false, false);">' + data[i] + '</a></li>');
+						$("#database_table_albums").append('<li>' + ((DefaultJS.permissions.playlist.add.album)?'<a href="#add" onclick="return !DefaultJS.addto_playlist_album(\'' + data[i].replace(/'/g, "\\'") + '\', \'' + artist.replace(/'/g, "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a>':'') + ' <a href="#songs" onclick="return !DefaultJS.get_songs(\'' + artist.replace(/'/g, "\\'") + '\', \'' + data[i].replace(/'/g, "\\'") + '\', false, false, false);">' + data[i] + '</a></li>');
 				};
 			}
 		});
 		return true;
 	},
-	get_songs: function (artist, album, all_artist, all)
+	get_songs: function (artist, album, all_artist, all_album, all)
 	{
 		/*
 		 * Clean up:
@@ -757,25 +759,29 @@ var DefaultJS = {
 		/*
 		 * Receive songs:
 		*/
-		$.getJSON('ajax.py?action=songs&artist=' + encodeURIComponent(artist) + '&album=' + encodeURIComponent(album) + ((all_artist==true)?'&all_artist':'') + ((all==true)?'&all':''), function (data) {
+		$.getJSON('ajax.py?action=songs&artist=' + encodeURIComponent(artist) + '&album=' + encodeURIComponent(album) + ((all_artist==true)?'&all_artist':'') + ((all_album==true)?'&all_album':'') + ((all==true)?'&all':''), function (data) {
 			var i;
 			if (all)
 				$("#database_table_songs_header").html("All Songs");
 			else if (all_artist)
 			{
 				if (artist == "")
-					$("#database_table_songs_header").html("Songs (Unknown Artist)");
+					$("#database_table_songs_header").html("Songs ([Unknown Artist])");
 				else
 					$("#database_table_songs_header").html("Songs (" + artist + ")");
+			}
+			else if (all_album)
+			{
+				$("#database_table_songs_header").html("Songs ([Unknown Album])");
 			}
 			else
 			{
 				if (artist == "" && data[0].artist == null)
-					artist = "Unknown artist";
+					artist = "[Unknown Artist]";
 				else if (data[0].artist != null)
 					artist = data[0].artist;
 				if (album == "")
-					album = "Unknown album";
+					album = "[Unknown Album]";
 				$("#database_table_songs_header").html("Songs (" + artist + " - " + album +")");
 			};
 			for (i=0; i < data.length; i++)
@@ -825,7 +831,7 @@ var DefaultJS = {
 			 * Show status:
 			*/
 			if (album == "")
-				album = "[Unknown album]";
+				album = "[Unknown Album]";
 			if (artist == null)
 			{
 				DefaultJS.show_status('All songs of the album <em>' + album + '</em> successfully added to playlist!');

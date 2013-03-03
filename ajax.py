@@ -246,6 +246,8 @@ class WebMPD_Ajax(object):
 						return self.get_error(102, "Invalid argument!")
 					else:
 						return json.dumps(self.mpd.find("artist", artist))
+				elif "all_album" in qs:
+					return json.dumps(self.mpd.find("album", ""))
 				else:
 					try:
 						artist = qs["artist"][0]
@@ -257,10 +259,7 @@ class WebMPD_Ajax(object):
 						except:
 							return self.get_error(102, "Invalid argument!")
 						else:
-							if artist == "":
-								return json.dumps(self.mpd.find("album", album))
-							else:
-								return json.dumps(self.mpd.find("artist", artist, "album", album))
+							return json.dumps(self.mpd.find("artist", artist, "album", album))
 			elif action == "add":
 				res = self.check_permission("playlist.add.file")
 				if res is not None:
