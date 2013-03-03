@@ -4,7 +4,6 @@ access
 playback.view
 	currentsong
 	status
-	stats
 	playlist
 playback.control
 	pause
@@ -52,3 +51,5 @@ outputs.disable
 	disableoutput
 outputs.enable
 	enableoutput
+stats
+	stats

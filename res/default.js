@@ -100,9 +100,13 @@ var DefaultJS = {
 						// Audio Outputs
 						DefaultJS.list_outputs();
 						break;
+					case "player_list_tabs-7":
+						// Statistics
+						DefaultJS.get_stats();
+						break;
 				}
 			},
-			disabled: [ 1, 2, 3, 4, 5 ]
+			disabled: [ 1, 2, 3, 4, 5, 6 ]
 		});
 		$("#player_playlist tbody").sortable({
 			stop: function (event, ui) {
@@ -255,6 +259,17 @@ var DefaultJS = {
 			else
 			{
 				$("#player_list_tabs").tabs("disable", 5);
+			};
+			/*
+			 * stats
+			*/
+			if (data.stats)
+			{
+				$("#player_list_tabs").tabs("enable", 6);
+			}
+			else
+			{
+				$("#player_list_tabs").tabs("disable", 6);
 			};
 		});
 	},
@@ -1076,5 +1091,83 @@ var DefaultJS = {
 				DefaultJS.show_status('Output successfully disabled.');
 		});
 		return true;
+	},
+	format_time: function (secs)
+	{
+		if (secs >= 86400)
+		{
+			var mins = Math.floor(secs/60.);
+			secs -= mins*60;
+			var hours = Math.floor(mins/60.);
+			mins -= hours*60;
+			var days = Math.floor(hours/24.);
+			hours -= days*24;
+			if (hours < 10)
+				hours = '0' + hours;
+			if (mins < 10)
+				mins = '0' + mins;
+			if (secs < 10)
+				secs = '0' + secs;
+			return days + 'd ' + hours + 'h ' + mins + 'm ' + secs + 's';
+		}
+		else if (secs >= 3600)
+		{
+			var mins = Math.floor(secs/60.);
+			secs -= mins*60;
+			var hours = Math.floor(mins/60.);
+			mins -= hours*60;
+			if (mins < 10)
+				mins = '0' + mins;
+			if (secs < 10)
+				secs = '0' + secs;
+			return hours + 'h ' + mins + 'm ' + secs + 's';
+		}
+		else if (secs >= 60)
+		{
+			var mins = Math.floor(secs/60.);
+			secs -= mins*60;
+			if (secs < 10)
+				secs = '0' + secs;
+			return mins + 'm ' + secs + 's';
+		}
+		else
+		{
+			if (secs < 10)
+				secs = '0' + secs;
+			return secs + 's';
+		};
+	},
+	get_stats: function ()
+	{
+		$.getJSON('ajax.py?action=stats', function (data) {
+			/*
+			 * artists:
+			*/
+			$("#statistics_artists").html(data.artists);
+			/*
+			 * albums:
+			*/
+			$("#statistics_albums").html(data.albums);
+			/*
+			 * songs:
+			*/
+			$("#statistics_songs").html(data.songs);
+			/*
+			 * playtime:
+			*/
+			$("#statistics_playtime").html(DefaultJS.format_time(parseInt(data.playtime)));
+			/*
+			 * db_playtime:
+			*/
+			$("#statistics_db_playtime").html(DefaultJS.format_time(parseInt(data.db_playtime)));
+			/*
+			 * db_update:
+			*/
+			$("#statistics_db_update").html(DefaultJS.format_time(parseInt(data.db_update)) + ' ago');
+			/*
+			 * uptime:
+			*/
+			$("#statistics_uptime").html(DefaultJS.format_time(parseInt(data.uptime)));
+		});
 	}
 }

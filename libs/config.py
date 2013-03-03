@@ -129,11 +129,13 @@ default_permissions = {
 		"remove": False
 	},
 	"outputs": {
-		# This permission is needed to view the audio outputs:
+		# This permission is necessary to view the audio outputs:
 		"view": True,
-		# This permission is needed to disable audio outputs:
+		# This permission is necessary to disable audio outputs:
 		"disable": False,
-		# This permission is needed to enable audio outputs:
+		# This permission is necessary to enable audio outputs:
 		"enable": False
-	}
+	},
+	# This permission is necessary to view the statistics:
+	"stats": True
 }

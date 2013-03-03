@@ -41,6 +41,9 @@ a:hover {
 	color: #656565;
 	text-decoration: none;
 }
+dd {
+	margin-left: 20px;
+}
 div#leftrow {
 	float: left;
 	margin-left: 20px;

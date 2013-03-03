@@ -31,7 +31,7 @@ except BaseException as e:
 	print(e)
 	exit()
 ## IMPORT STANDARD LIBRARIES:
-import json, os, urllib.parse, sys
+import json, os, urllib.parse, sys, time
 ## IMPORT DELIVERED LIBRARIES:
 import libs.config as config
 import libs.mpd as mpd
@@ -82,9 +82,11 @@ else:
 		print(json.dumps(MPD_CLIENT.status()))
 		mpd_disconnect()
 	elif action == "stats":
-		check_permission("playback.view")
+		check_permission("stats")
 		mpd_connect()
-		print(json.dumps(MPD_CLIENT.stats()))
+		res = MPD_CLIENT.stats()
+		res["db_update"] = time.mktime(time.localtime())-int(res["db_update"])
+		print(json.dumps(res))
 		mpd_disconnect()
 	elif action == "pause":
 		check_permission("playback.control")
