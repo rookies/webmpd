@@ -649,6 +649,8 @@ var DefaultJS = {
 				secs -= mins*60;
 				if (mins < 10)
 					mins = '0' + mins;
+				if (secs < 10)
+					secs = '0' + secs;
 				$("#player_playlist_time").html(mins + 'm ' + secs + 's');
 			}
 			else
