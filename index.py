@@ -149,11 +149,18 @@ class WebMPD_Index(object):
 
 if __name__ == "__main__":
 	## HANDLE THE CGI REQUEST:
-	qs = urllib.parse.parse_qs(os.getenv("QUERY_STRING"), keep_blank_values=True)
-	index = WebMPD_Index()
-	res = index.handle_request(qs)
-	print("Status: " + str(res["status"]))
-	for key, val in res["headers"].items():
-		print(key + ": " + val)
-	print("")
-	print(res["content"])
+	try:
+		qs = urllib.parse.parse_qs(os.getenv("QUERY_STRING"), keep_blank_values=True)
+		index = WebMPD_Index()
+		res = index.handle_request(qs)
+	except:
+		print("Status: 500")
+		print("Content-Type: text/plain")
+		print("")
+		traceback.print_last()
+	else:
+		print("Status: " + str(res["status"]))
+		for key, val in res["headers"].items():
+			print(key + ": " + val)
+		print("")
+		print(res["content"])

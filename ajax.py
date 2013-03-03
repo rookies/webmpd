@@ -21,7 +21,7 @@
 #
 
 ## IMPORT STANDARD LIBRARIES:
-import json, os, urllib.parse, sys, time
+import json, os, urllib.parse, sys, time, traceback
 ## IMPORT DELIVERED LIBRARIES:
 import libs.config as config
 import libs.mpd as mpd
@@ -429,11 +429,19 @@ class WebMPD_Ajax(object):
 
 if __name__ == "__main__":
 	## HANDLE THE CGI REQUEST:
-	qs = urllib.parse.parse_qs(os.getenv("QUERY_STRING"), keep_blank_values=True)
-	ajax = WebMPD_Ajax()
-	ajax.mpd_connect()
-	print("Status: 200")
-	print("Content-Type: text/html")
-	print("")
-	print(ajax.handle_request(qs))
-	ajax.mpd_disconnect()
+	try:
+		qs = urllib.parse.parse_qs(os.getenv("QUERY_STRING"), keep_blank_values=True)
+		ajax = WebMPD_Ajax()
+		ajax.mpd_connect()
+		res = ajax.handle_request(qs)
+		ajax.mpd_disconnect()
+	except BaseException as e:
+		print("Status: 500")
+		print("Content-Type: text/plain")
+		print("")
+		traceback.print_last()
+	else:
+		print("Status: 200")
+		print("Content-Type: text/html")
+		print("")
+		print(res)

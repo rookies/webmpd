@@ -20,8 +20,7 @@
 #  
 #
 ## IMPORT STANDARD LIBRARIES:
-import urllib.parse, sys
-sys.path.append("..")
+import urllib.parse, sys, traceback, io
 ## IMPORT DELIVERED LIBRARIES:
 import libs.config as config
 from ajax import WebMPD_Ajax
@@ -42,13 +41,28 @@ class WebMPD_FastCGI(object):
 			qs = urllib.parse.parse_qs(environ["QUERY_STRING"], keep_blank_values=True)
 			## REQUEST TO ajax.py:
 			if environ["SCRIPT_FILENAME"] == config.path + "ajax.py":
-				start_response('200 OK', [('Content-Type', 'text/html')])
-				return str(self.ajax.handle_request(qs))
+				try:
+					res = self.ajax.handle_request(qs)
+				except:
+					start_response('500 Internal Server Error', [('Content-Type', 'text/plain')])
+					s = io.StringIO()
+					traceback.print_last(file=s)
+					return s.getvalue()
+				else:
+					start_response('200 OK', [('Content-Type', 'text/html')])
+					return res
 			## REQUEST TO index.py:
 			elif environ["SCRIPT_FILENAME"] == config.path + "index.py":
-				res = self.index.handle_request(qs, environ)
-				start_response(str(res["status"]) + ' ' + self.responses[res["status"]], list(res["headers"].items()))
-				return res["content"]
+				try:
+					res = self.index.handle_request(qs, environ)
+				except:
+					start_response('500 Internal Server Error', [('Content-Type', 'text/plain')])
+					s = io.StringIO()
+					traceback.print_last(file=s)
+					return s.getvalue()
+				else:
+					start_response(str(res["status"]) + ' ' + self.responses[res["status"]], list(res["headers"].items()))
+					return res["content"]
 		else:
 			start_response('400 Bad Request', [('Content-Type', 'text/html')])
 			return '<h1>400 Bad Request</h1>'

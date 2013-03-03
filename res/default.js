@@ -590,12 +590,15 @@ var DefaultJS = {
 		$.getJSON('ajax.py?action=playlist', function (data) {
 			var i;
 			$("#player_playlist tbody tr").remove();
+			var playlist_len = data.length;
+			var playlist_time = 0;
 			DefaultJS.playlist = [];
 			for (i=0; i < data.length; i++)
 			{
-				t = parseInt(data[i].time);
-				min = Math.floor(t/60.);
-				sec = t-min*60;
+				var t = parseInt(data[i].time);
+				playlist_time += t;
+				var min = Math.floor(t/60.);
+				var sec = t-min*60;
 				if (sec < 10)
 					sec = '0' + sec;
 				if (data[i].artist == null)
@@ -615,6 +618,34 @@ var DefaultJS = {
 				$("#player_playlist tbody").append('<tr' + classes + '><td class="invisible">' + data[i].id + '</td><td>' + min + ':' + sec + '</td><td>' + data[i].artist + '</td><td>' + data[i].title + '</td><td>' + data[i].date + '</td><td>' + data[i].album + '</td><td>' + ((DefaultJS.permissions.playlist.change)?'<a href="#remove" onclick="return !DefaultJS.remove_playlistitem(' + data[i].id + ');"><img src="res/img/list-remove.png" width="16" height="16" alt="Remove" title="Remove" /></a>':'') + ' ' + ((DefaultJS.permissions.playback.control)?('<a href="#play" onclick="return !DefaultJS.play_playlistitem(' + data[i].id + ');"><img src="res/img/media-playback-start.png" width="16" height="16" alt="Start playback here" title="Start playback here" /></a>'):'') + ' ' + ((DefaultJS.permissions.playlist.change && i != 0)?'<a href="#moveup" onclick="return !DefaultJS.move_playlistitem_up(' + data[i].id + ');"><img src="res/img/go-up.png" height="16" width="16" alt="Move up" title="Move up" /></a>':'') + ' ' + ((DefaultJS.permissions.playlist.change && i != data.length-1)?'<a href="#movedown" onclick="return !DefaultJS.move_playlistitem_down(' + data[i].id + ');"><img src="res/img/go-down.png" height="16" width="16" alt="Move down" title="Move down" /></a>':'') + '</td></tr>');
 				DefaultJS.playlist.push(parseInt(data[i].id));
 			}
+			$("#player_playlist_length").html(playlist_len);
+			var secs = parseInt(playlist_time);
+			if (secs >= 3600)
+			{
+				var mins = Math.floor(secs/60.);
+				secs -= mins*60;
+				var hours = Math.floor(mins/60.);
+				mins -= hours*60;
+				if (mins < 10)
+					mins = '0' + mins;
+				if (secs < 10)
+					secs = '0' + secs;
+				$("#player_playlist_time").html(hours + 'h ' + mins + 'm ' + secs + 's');
+			}
+			else if (secs >= 60)
+			{
+				var mins = Math.floor(secs/60.);
+				secs -= mins*60;
+				if (mins < 10)
+					mins = '0' + mins;
+				$("#player_playlist_time").html(mins + 'm ' + secs + 's');
+			}
+			else
+			{
+				if (secs < 10)
+					secs = '0' + secs;
+				$("#player_playlist_time").html(secs + 's');
+			};
 		});
 	},
 	move_playlistitem: function (id, pos)
