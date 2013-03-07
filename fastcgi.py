@@ -42,7 +42,7 @@ class WebMPD_FastCGI(object):
 			## REQUEST TO ajax.py:
 			if environ["SCRIPT_FILENAME"] == config.path + "ajax.py":
 				try:
-					res = self.ajax.handle_request(qs)
+					res = self.ajax.handle_request(qs, environ)
 				except:
 					start_response('500 Internal Server Error', [('Content-Type', 'text/plain')])
 					s = io.StringIO()

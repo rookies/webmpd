@@ -64,7 +64,6 @@ class WebMPD_Ajax(object):
 				self.cookie_env = environ["HTTP_COOKIE"]
 			else:
 				self.cookie_env = ""
-		
 		res = self.check_permission("access")
 		if res is not None:
 			return res
