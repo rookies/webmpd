@@ -29,7 +29,6 @@ import libs.usermanager as usermanager
 
 class WebMPD_Ajax(object):
 	mpd = mpd.MPDClient()
-	cookie_env = None
 
 	def get_error(self, code, message):
 		return json.dumps({
@@ -37,7 +36,6 @@ class WebMPD_Ajax(object):
 			"code": code,
 			"message": message
 		})
-		sys.exit()
 	def mpd_connect(self):
 		if self.mpd._sock is not None:
 			return False
@@ -50,21 +48,21 @@ class WebMPD_Ajax(object):
 		return True
 	def mpd_disconnect(self):
 		self.mpd.close()
-	def check_permission(self, name):
-		if usermanager.get_permission(self.cookie_env, name):
+	def check_permission(self, cookie_env, name):
+		if usermanager.get_permission(cookie_env, name):
 			return None
 		return self.get_error(201, "Action not allowed! You need permission '%s'!" % name)
 	def handle_request(self, qs, environ=None):
 		self.mpd_connect()
 		## Get cookie_env:
 		if environ is None:
-			self.cookie_env = os.getenv("HTTP_COOKIE")
+			cookie_env = os.getenv("HTTP_COOKIE")
 		else:
 			if "HTTP_COOKIE" in environ:
-				self.cookie_env = environ["HTTP_COOKIE"]
+				cookie_env = environ["HTTP_COOKIE"]
 			else:
-				self.cookie_env = ""
-		res = self.check_permission("access")
+				cookie_env = ""
+		res = self.check_permission(cookie_env, "access")
 		if res is not None:
 			return res
 		if not "action" in qs:
@@ -72,41 +70,41 @@ class WebMPD_Ajax(object):
 		else:
 			action = qs["action"][0]
 			if action == "permissions":
-				return json.dumps(usermanager.get_permissions(self.cookie_env))
+				return json.dumps(usermanager.get_permissions(cookie_env))
 			elif action == "currentsong":
-				res = res = self.check_permission("playback.view")
+				res = res = self.check_permission(cookie_env, "playback.view")
 				if res is not None:
 					return res
 				return json.dumps(self.mpd.currentsong())
 			elif action == "status":
-				res = self.check_permission("playback.view")
+				res = self.check_permission(cookie_env, "playback.view")
 				if res is not None:
 					return res
 				return json.dumps(self.mpd.status())
 			elif action == "stats":
-				res = self.check_permission("stats")
+				res = self.check_permission(cookie_env, "stats")
 				if res is not None:
 					return res
 				res = self.mpd.stats()
 				res["db_update"] = time.mktime(time.localtime())-int(res["db_update"])
 				return json.dumps(res)
 			elif action == "pause":
-				res = self.check_permission("playback.control")
+				res = self.check_permission(cookie_env, "playback.control")
 				if res is not None:
 					return res
 				return json.dumps(self.mpd.pause())
 			elif action == "play":
-				res = self.check_permission("playback.control")
+				res = self.check_permission(cookie_env, "playback.control")
 				if res is not None:
 					return res
 				return json.dumps(self.mpd.play())
 			elif action == "stop":
-				res = self.check_permission("playback.control")
+				res = self.check_permission(cookie_env, "playback.control")
 				if res is not None:
 					return res
 				return json.dumps(self.mpd.stop())
 			elif action == "setvol":
-				res = self.check_permission("playback.change_options")
+				res = self.check_permission(cookie_env, "playback.change_options")
 				if res is not None:
 					return res
 				try:
@@ -116,7 +114,7 @@ class WebMPD_Ajax(object):
 				else:
 					return json.dumps(self.mpd.setvol(value))
 			elif action == "setxfade":
-				res = self.check_permission("playback.change_options")
+				res = self.check_permission(cookie_env, "playback.change_options")
 				if res is not None:
 					return res
 				try:
@@ -126,7 +124,7 @@ class WebMPD_Ajax(object):
 				else:
 					return json.dumps(self.mpd.crossfade(value))
 			elif action == "seek":
-				res = self.check_permission("playback.control")
+				res = self.check_permission(cookie_env, "playback.control")
 				if res is not None:
 					return res
 				try:
@@ -136,17 +134,17 @@ class WebMPD_Ajax(object):
 				else:
 					return json.dumps(self.mpd.seek(0, value))
 			elif action == "prev":
-				res = self.check_permission("playback.control")
+				res = self.check_permission(cookie_env, "playback.control")
 				if res is not None:
 					return res
 				return json.dumps(self.mpd.previous())
 			elif action == "next":
-				res = self.check_permission("playback.control")
+				res = self.check_permission(cookie_env, "playback.control")
 				if res is not None:
 					return res
 				return json.dumps(self.mpd.next())
 			elif action == "update_modifiers":
-				res = self.check_permission("playback.change_options")
+				res = self.check_permission(cookie_env, "playback.change_options")
 				if res is not None:
 					return res
 				self.mpd.command_list_ok_begin()
@@ -185,12 +183,12 @@ class WebMPD_Ajax(object):
 				# send commands & disconnect:
 				return json.dumps(self.mpd.command_list_end())
 			elif action == "playlist":
-				res = self.check_permission("playback.view")
+				res = self.check_permission(cookie_env, "playback.view")
 				if res is not None:
 					return res
 				return json.dumps(self.mpd.playlistinfo())
 			elif action == "moveid":
-				res = self.check_permission("playlist.change")
+				res = self.check_permission(cookie_env, "playlist.change")
 				if res is not None:
 					return res
 				try:
@@ -205,7 +203,7 @@ class WebMPD_Ajax(object):
 					else:
 						return json.dumps(self.mpd.moveid(fr, to))
 			elif action == "deleteid":
-				res = self.check_permission("playlist.change")
+				res = self.check_permission(cookie_env, "playlist.change")
 				if res is not None:
 					return res
 				try:
@@ -215,12 +213,12 @@ class WebMPD_Ajax(object):
 				else:
 					return json.dumps(self.mpd.deleteid(id_))
 			elif action == "artists":
-				res = self.check_permission("database.view")
+				res = self.check_permission(cookie_env, "database.view")
 				if res is not None:
 					return res
 				return json.dumps(self.mpd.list("artist"))
 			elif action == "albums":
-				res = self.check_permission("database.view")
+				res = self.check_permission(cookie_env, "database.view")
 				if res is not None:
 					return res
 				if "all" in qs:
@@ -233,7 +231,7 @@ class WebMPD_Ajax(object):
 					else:
 						return json.dumps(self.mpd.list("album", artist))
 			elif action == "songs":
-				res = self.check_permission("database.view")
+				res = self.check_permission(cookie_env, "database.view")
 				if res is not None:
 					return res
 				if "all" in qs:
@@ -265,7 +263,7 @@ class WebMPD_Ajax(object):
 						else:
 							return json.dumps(self.mpd.find("artist", artist, "album", album))
 			elif action == "add":
-				res = self.check_permission("playlist.add.file")
+				res = self.check_permission(cookie_env, "playlist.add.file")
 				if res is not None:
 					return res
 				try:
@@ -279,7 +277,7 @@ class WebMPD_Ajax(object):
 					else:
 						return json.dumps(res)
 			elif action == "addartist":
-				res = self.check_permission("playlist.add.artist")
+				res = self.check_permission(cookie_env, "playlist.add.artist")
 				if res is not None:
 					return res
 				try:
@@ -289,7 +287,7 @@ class WebMPD_Ajax(object):
 				else:
 					return json.dumps(self.mpd.findadd("artist", artist))
 			elif action == "addalbum":
-				res = self.check_permission("playlist.add.album")
+				res = self.check_permission(cookie_env, "playlist.add.album")
 				if res is not None:
 					return res
 				try:
@@ -306,7 +304,7 @@ class WebMPD_Ajax(object):
 						## artist given
 						return json.dumps(self.mpd.findadd("artist", artist, "album", album))
 			elif action == "playid":
-				res = self.check_permission("playback.control")
+				res = self.check_permission(cookie_env, "playback.control")
 				if res is not None:
 					return res
 				try:
@@ -316,12 +314,12 @@ class WebMPD_Ajax(object):
 				else:
 					return json.dumps(self.mpd.playid(id_))
 			elif action == "clear":
-				res = self.check_permission("playlist.clear")
+				res = self.check_permission(cookie_env, "playlist.clear")
 				if res is not None:
 					return res
 				return json.dumps(self.mpd.clear())
 			elif action == "ls":
-				res = self.check_permission("filesystem.view")
+				res = self.check_permission(cookie_env, "filesystem.view")
 				if res is not None:
 					return res
 				try:
@@ -340,7 +338,7 @@ class WebMPD_Ajax(object):
 								res2.append(item)
 						return json.dumps(res2)
 			elif action == "search":
-				res = self.check_permission("search")
+				res = self.check_permission(cookie_env, "search")
 				if res is not None:
 					return res
 				arg_keys = [ "any", "artist", "title", "album", "file", "composer", "performer", "genre", "date", "comment"]
@@ -358,12 +356,12 @@ class WebMPD_Ajax(object):
 				else:
 					return json.dumps(self.mpd.search(*args))
 			elif action == "listplaylists":
-				res = self.check_permission("stored_playlists.view")
+				res = self.check_permission(cookie_env, "stored_playlists.view")
 				if res is not None:
 					return res
 				return json.dumps(self.mpd.listplaylists())
 			elif action == "listplaylistinfo":
-				res = self.check_permission("stored_playlists.view")
+				res = self.check_permission(cookie_env, "stored_playlists.view")
 				if res is not None:
 					return res
 				try:
@@ -373,7 +371,7 @@ class WebMPD_Ajax(object):
 				else:
 					return json.dumps(self.mpd.listplaylistinfo(name))
 			elif action == "load":
-				res = self.check_permission("stored_playlists.load")
+				res = self.check_permission(cookie_env, "stored_playlists.load")
 				if res is not None:
 					return res
 				try:
@@ -383,7 +381,7 @@ class WebMPD_Ajax(object):
 				else:
 					return json.dumps(self.mpd.load(name))
 			elif action == "rm":
-				res = self.check_permission("stored_playlists.remove")
+				res = self.check_permission(cookie_env, "stored_playlists.remove")
 				if res is not None:
 					return res
 				try:
@@ -393,7 +391,7 @@ class WebMPD_Ajax(object):
 				else:
 					return json.dumps(self.mpd.rm(name))
 			elif action == "save":
-				res = self.check_permission("playlist.save")
+				res = self.check_permission(cookie_env, "playlist.save")
 				if res is not None:
 					return res
 				try:
@@ -403,12 +401,12 @@ class WebMPD_Ajax(object):
 				else:
 					return json.dumps(self.mpd.save(name))
 			elif action == "outputs":
-				res = self.check_permission("outputs.view")
+				res = self.check_permission(cookie_env, "outputs.view")
 				if res is not None:
 					return res
 				return json.dumps(self.mpd.outputs())
 			elif action == "disableoutput":
-				res = self.check_permission("outputs.disable")
+				res = self.check_permission(cookie_env, "outputs.disable")
 				if res is not None:
 					return res
 				try:
@@ -418,7 +416,7 @@ class WebMPD_Ajax(object):
 				else:
 					return json.dumps(self.mpd.disableoutput(id_))
 			elif action == "enableoutput":
-				res = self.check_permission("outputs.enable")
+				res = self.check_permission(cookie_env, "outputs.enable")
 				if res is not None:
 					return res
 				try:
@@ -428,7 +426,7 @@ class WebMPD_Ajax(object):
 				else:
 					return json.dumps(self.mpd.enableoutput(id_))
 			elif action == "shuffle":
-				res = self.check_permission("playlist.shuffle")
+				res = self.check_permission(cookie_env, "playlist.shuffle")
 				if res is not None:
 					return res
 				return json.dumps(self.mpd.shuffle())

@@ -20,6 +20,7 @@
 #
 ## IMPORT STANDARD LIBRARIES:
 import sys, hashlib, random, time, os
+from copy import deepcopy
 sys.path.append("..")
 ## IMPORT DELIVERED LIBRARIES:
 import libs.config as config
@@ -104,11 +105,13 @@ def login (username, password):
 					`lastactive` = ?
 			""", (sid, row[0], time.mktime(time.gmtime()), time.mktime(time.gmtime())))
 			cursor.commit()
+			cursor.close()
 			## ... and set the cookie:
 			return {
 				"Set-Cookie": "webmpd_sid=%s" % (sid)
 			}
 	## Login failed:
+	cursor.close()
 	return False
 
 def get_permission (cookie_env, name):
@@ -126,8 +129,9 @@ def get_permission (cookie_env, name):
 	return False
 
 def get_permissions (cookie_env):
+	global DB_CONN
 	## Set default permissions:
-	permissions = config.default_permissions
+	permissions = deepcopy(config.default_permissions) # important: copy!
 	## Get session cookie:
 	cookies = get_cookies(cookie_env)
 	if not "webmpd_sid" in cookies:
@@ -148,6 +152,7 @@ def get_permissions (cookie_env):
 			`users`.`id` = `sessions`.`uid` AND
 			`permissions`.`group` = `users`.`group`
 	""", (cookies["webmpd_sid"], )).fetchmany()
+	cursor.close()
 	## Run through database permissions:
 	for perm in rows:
 		key = perm[0]
@@ -181,6 +186,7 @@ def set_permissions_recursively (permissions, value):
 	return ret
 			
 def is_loggedin (cookie_env):
+	global DB_CONN
 	cookies = get_cookies(cookie_env)
 	if not "webmpd_sid" in cookies:
 		return False
@@ -196,12 +202,14 @@ def is_loggedin (cookie_env):
 		LIMIT
 			1
 	""", (cookies["webmpd_sid"], )).fetchone()
+	cursor.close()
 	if int(row[0]) > 0:
 		return True
 	else:
 		return False
 
 def get_username (cookie_env):
+	global DB_CONN
 	cookies = get_cookies(cookie_env)
 	if not "webmpd_sid" in cookies:
 		return None
@@ -220,9 +228,11 @@ def get_username (cookie_env):
 		LIMIT
 			1
 	""", (cookies["webmpd_sid"], )).fetchone()
+	cursor.close()
 	return row[1]
 
 def logout (cookie_env):
+	global DB_CONN
 	cookies = get_cookies(cookie_env)
 	if not "webmpd_sid" in cookies:
 		return False
@@ -238,6 +248,7 @@ def logout (cookie_env):
 			1
 	""", (cookies["webmpd_sid"], ))
 	cursor.commit()
+	cursor.close()
 	## And delete the cookie:
 	return {
 		"Set-Cookie": "webmpd_sid=; Expires=Thu, 01-Jan-1970 00:00:01 GMT"
