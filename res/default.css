@@ -145,9 +145,6 @@ div#player_list_tabs {
 	margin-top: 20px;
 	overflow: auto;
 }
-div#player_list_tabs ul.ui-tabs-nav {
-	height: 50px;
-}
 .invisible {
 	display: none;
 }
