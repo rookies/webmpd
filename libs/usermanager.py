@@ -60,7 +60,50 @@ def database_connect ():
 	if DB_CONN:
 		return False
 	DB_CONN = pyodbc.connect(config.database)
+	database_cleanup()
 	return True
+
+def database_update (cookie_env):
+	global DB_CONN
+	## Get database:
+	cursor = DB_CONN.cursor()
+	## Update lastactive entry:
+	cookies = get_cookies(cookie_env)
+	if "webmpd_sid" in cookies:
+		cursor.execute("""
+			UPDATE
+				`sessions`
+			SET
+				`lastactive` = ?
+			WHERE
+				`sid` = ?
+			LIMIT
+				1
+		""", (time.mktime(time.gmtime()), cookies["webmpd_sid"], ))
+		cursor.commit()
+	cursor.close()
+
+def database_cleanup ():
+	global DB_CONN
+	## Get database:
+	cursor = DB_CONN.cursor()
+	## Delete old sessions:
+	if config.session_created_timeout is not None:
+		cursor.execute("""
+			DELETE FROM
+				`sessions`
+			WHERE
+				`created` < ?
+		""", (time.mktime(time.gmtime())-config.session_created_timeout, ))
+		cursor.commit()
+	if config.session_lastactive_timeout is not None:
+		cursor.execute("""
+			DELETE FROM
+				`sessions`
+			WHERE
+				`lastactive` < ?
+		""", (time.mktime(time.gmtime())-config.session_lastactive_timeout, ))
+		cursor.commit()
 
 def login (username, password):
 	global DB_CONN
@@ -138,6 +181,7 @@ def get_permissions (cookie_env):
 		return permissions
 	## Get permissions from database:
 	database_connect()
+	database_update(cookie_env)
 	cursor = DB_CONN.cursor()
 	rows = cursor.execute("""
 		SELECT
@@ -191,6 +235,7 @@ def is_loggedin (cookie_env):
 	if not "webmpd_sid" in cookies:
 		return False
 	database_connect()
+	database_update(cookie_env)
 	cursor = DB_CONN.cursor()
 	row = cursor.execute("""
 		SELECT
@@ -203,7 +248,7 @@ def is_loggedin (cookie_env):
 			1
 	""", (cookies["webmpd_sid"], )).fetchone()
 	cursor.close()
-	if int(row[0]) > 0:
+	if row is not None and int(row[0]) > 0:
 		return True
 	else:
 		return False
@@ -214,6 +259,7 @@ def get_username (cookie_env):
 	if not "webmpd_sid" in cookies:
 		return None
 	database_connect()
+	database_update(cookie_env)
 	cursor = DB_CONN.cursor()
 	row = cursor.execute("""
 		SELECT
@@ -229,7 +275,10 @@ def get_username (cookie_env):
 			1
 	""", (cookies["webmpd_sid"], )).fetchone()
 	cursor.close()
-	return row[1]
+	if row is not None:
+		return row[1]
+	else:
+		return ""
 
 def logout (cookie_env):
 	global DB_CONN
@@ -237,6 +286,7 @@ def logout (cookie_env):
 	if not "webmpd_sid" in cookies:
 		return False
 	database_connect()
+	database_update(cookie_env)
 	cursor = DB_CONN.cursor()
 	## Delete from database:
 	row = cursor.execute("""

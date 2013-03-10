@@ -141,3 +141,11 @@ default_permissions = {
 	# This permission is necessary to view the statistics:
 	"stats": True
 }
+
+## Type: int or None
+## Description: The timeout for sessions since their creation. (in seconds)
+session_created_timeout = 3600
+
+## Type: int or None
+## Description: The timeout for sessions since the last user action. (in seconds)
+session_lastactive_timeout = None
