@@ -23,7 +23,6 @@
 
 var DefaultJS = {
 	status_data: null,
-	get_status_timeout: null,
 	volume_bar_locked: false,
 	progress_bar_locked: false,
 	xfade_bar_locked: false,
@@ -129,14 +128,6 @@ var DefaultJS = {
 	{
 		$.getJSON('ajax.py?action=permissions', function (data) {
 			DefaultJS.permissions = data;
-			/*
-			 * playback.view
-			*/
-			if (data.playback.view)
-			{
-				DefaultJS.get_status();
-				DefaultJS.get_status_timeout = window.setTimeout(DefaultJS.get_status, 1000);
-			};
 			/*
 			 * playback.control
 			*/
@@ -306,6 +297,39 @@ var DefaultJS = {
 			{
 				$("#player_list_tabs").tabs("disable", 6);
 			};
+			/*
+			 * Start polling:
+			*/
+			DefaultJS.idle();
+			DefaultJS.get_status();
+		});
+	},
+	idle: function ()
+	{
+		$.getJSON('ajax.py?action=idle', function (data) {
+			var i;
+			for (i=0; i < data.length; i++)
+			{
+				switch (data[i])
+				{
+					case "player":
+						DefaultJS.get_status();
+						DefaultJS.get_currentsong();
+						break;
+					case "playlist":
+						DefaultJS.get_playlist();
+						break;
+					case "mixer":
+						DefaultJS.get_status();
+						break;
+					case "options":
+						DefaultJS.get_status();
+						break;
+					default:
+						alert('Idle event: ' + data[i]);
+				}
+			}
+			DefaultJS.idle();
 		});
 	},
 	get_status: function ()
@@ -467,44 +491,21 @@ var DefaultJS = {
 				$("#player_time").removeClass("invisible");
 			};
 			/*
-			 * Check what we have to update:
-			*/
-			if (DefaultJS.status_data == null || DefaultJS.status_data.songid != data.songid ||DefaultJS.status_data.state != data.state)
-				update_songinfo = true;
-			else
-				update_songinfo = false;
-			if (DefaultJS.status_data == null || DefaultJS.status_data.playlist != data.playlist)
-				update_playlist = true;
-			else
-				update_playlist = false;
-			/*
 			 * Save status data:
 			*/
 			DefaultJS.status_data = data;
 			/*
-			 * Update song info and playlist if needed:
+			 * Get currentsong & playlist:
 			*/
-			if (update_songinfo)
-				DefaultJS.get_currentsong();
-			if (update_songinfo || update_playlist)
+			if (DefaultJS.first_statuscheck)
 			{
-				if (parseInt(data.playlistlength) == 0)
-				{
-					$("#player_playlist_empty").removeClass("invisible");
-					$("#player_playlist_notempty").addClass("invisible");
-				}
-				else
-				{
-					$("#player_playlist_notempty").removeClass("invisible");
-					$("#player_playlist_empty").addClass("invisible");
+				if (data.state != "stop")
+					DefaultJS.get_currentsong();
+				if (parseInt(data.playlistlength) > 0)
 					DefaultJS.get_playlist();
-				};
+				else
+					$("#player_playlist_empty").removeClass("invisible");
 			};
-			/*
-			 * Set new timeout:
-			*/
-			window.clearTimeout(DefaultJS.get_status_timeout);
-			DefaultJS.get_status_timeout = window.setTimeout(DefaultJS.get_status, 1000);
 			/*
 			 * Set first_statuscheck variable:
 			*/
@@ -714,6 +715,16 @@ var DefaultJS = {
 				if (secs < 10)
 					secs = '0' + secs;
 				$("#player_playlist_time").html(secs + 's');
+			};
+			if (data.length > 0)
+			{
+				$("#player_playlist_empty").addClass("invisible");
+				$("#player_playlist_notempty").removeClass("invisible");
+			}
+			else
+			{
+				$("#player_playlist_empty").removeClass("invisible");
+				$("#player_playlist_notempty").addClass("invisible");
 			};
 		});
 	},

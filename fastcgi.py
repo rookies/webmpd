@@ -26,7 +26,7 @@ import libs.config as config
 from ajax import WebMPD_Ajax
 from index import WebMPD_Index
 ## IMPORT FLUP:
-from flup.server.fcgi import WSGIServer
+from flup.server.fcgi_single import WSGIServer
 
 class WebMPD_FastCGI(object):
 	ajax = WebMPD_Ajax()
