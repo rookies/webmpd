@@ -30,6 +30,8 @@ var DefaultJS = {
 	first_statuscheck: true,
 	playlist: [],
 	permissions: null,
+	volume: -1,
+	xfade: -1,
 	init: function ()
 	{
 		this.get_permissions();
@@ -288,15 +290,39 @@ var DefaultJS = {
 	{
 		$.getJSON('ajax.py?action=status', function (data) {
 			/*
-			 * Set volume slider:
+			 * Set volume:
 			*/
 			if (!DefaultJS.volume_bar_locked)
 				$("#player_volume_bar").slider("value", parseInt(data.volume));
+			if (DefaultJS.volume == -1)
+			{
+				DefaultJS.volume = data.volume;
+			}
+			else
+			{
+				if (DefaultJS.volume != data.volume)
+				{
+					DefaultJS.show_status('Volume set to ' + data.volume + '%.');
+					DefaultJS.volume = data.volume;
+				};
+			};
 			/*
-			 * Set xfade slider:
+			 * Set xfade:
 			*/
 			if (!DefaultJS.xfade_bar_locked)
 				$("#player_xfade_bar").slider("value", parseInt(data.xfade));
+			if (DefaultJS.xfade == -1)
+			{
+				DefaultJS.xfade = data.xfade;
+			}
+			else
+			{
+				if (DefaultJS.xfade != data.xfade)
+				{
+					DefaultJS.show_status('Crossfade set to ' + data.xfade + ' sec.');
+					DefaultJS.xfade = data.xfade;
+				};
+			};
 			/*
 			 * Set error message:
 			*/
@@ -545,7 +571,6 @@ var DefaultJS = {
 	{
 		$.get('ajax.py?action=setvol&value=' + value, function (data) {
 			DefaultJS.get_status();
-			DefaultJS.show_status('Volume set to ' + value + '%.');
 		});
 		return true;
 	},
@@ -553,7 +578,6 @@ var DefaultJS = {
 	{
 		$.get('ajax.py?action=setxfade&value=' + value, function (data) {
 			DefaultJS.get_status();
-			DefaultJS.show_status('Crossfade set to ' + value + ' sec.');
 		});
 		return true;
 	},
