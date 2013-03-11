@@ -802,6 +802,23 @@ var DefaultJS = {
 					showtitle = data[i].file;
 				else
 					showtitle = data[i].title;
+				if (data[i].track != null)
+				{
+					if (data[i].track.match(/\//) != null)
+					{
+						var track = data[i].track.split("/")[0];
+						if (track.length == 1)
+							track = '0' + track;
+						showtitle = track + ' - ' + showtitle;
+					}
+					else
+					{
+						var track = data[i].track;
+						if (track.length == 1)
+							track = '0' + track;
+						showtitle = track + ' - ' + showtitle;
+					};
+				};
 				$("#database_table_songs").append('<li>' + ((DefaultJS.permissions.playlist.add.file)?'<a href="#add" onclick="return !DefaultJS.addto_playlist(\'' + data[i].file.replace(/'/g, "\\'") + '\');"><img src="res/img/list-add.png" alt="Add to playlist" height="16" width="16" /></a>':'') + ' ' + showtitle + '</li>');
 			}
 		});
