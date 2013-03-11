@@ -23,14 +23,15 @@
 
 var DefaultJS = {
 	status_data: null,
-	volume_bar_locked: false,
 	progress_bar_locked: false,
-	xfade_bar_locked: false,
 	first_statuscheck: true,
 	playlist: [],
 	permissions: null,
 	volume: -1,
 	xfade: -1,
+	increase_time_interval: null,
+	songduration: 0,
+	songelapsed: 0,
 	init: function ()
 	{
 		this.get_permissions();
@@ -52,11 +53,7 @@ var DefaultJS = {
 			value: 0,
 			min: 0,
 			max: 100,
-			start: function (event, ui) {
-				DefaultJS.volume_bar_locked = true;
-			},
 			stop: function (event, ui) {
-				DefaultJS.volume_bar_locked = false;
 				DefaultJS.set_volume(ui.value);
 			},
 			disabled: true
@@ -66,11 +63,7 @@ var DefaultJS = {
 			value: 0,
 			min: 0,
 			max: 30,
-			start: function (event, ui) {
-				DefaultJS.xfade_bar_locked = true;
-			},
 			stop: function (event, ui) {
-				DefaultJS.xfade_bar_locked = false;
 				DefaultJS.set_xfade(ui.value);
 			},
 			disabled: true
@@ -315,6 +308,7 @@ var DefaultJS = {
 					case "player":
 						DefaultJS.get_status();
 						DefaultJS.get_currentsong();
+						DefaultJS.get_playlist();
 						break;
 					case "playlist":
 						DefaultJS.get_playlist();
@@ -332,14 +326,25 @@ var DefaultJS = {
 			DefaultJS.idle();
 		});
 	},
+	increase_time: function ()
+	{
+		DefaultJS.songelapsed++;
+		t = DefaultJS.songelapsed;
+		min = Math.floor(t/60.);
+		sec = t-min*60;
+		if (sec < 10)
+			sec = '0' + sec;
+		$("#player_elapsed").html(min + ':' + sec);
+		if (!DefaultJS.progress_bar_locked)
+			$("#player_progress").slider("value", t);
+	},
 	get_status: function ()
 	{
 		$.getJSON('ajax.py?action=status', function (data) {
 			/*
 			 * Set volume:
 			*/
-			if (!DefaultJS.volume_bar_locked)
-				$("#player_volume_bar").slider("value", parseInt(data.volume));
+			$("#player_volume_bar").slider("value", parseInt(data.volume));
 			if (DefaultJS.volume == -1)
 			{
 				DefaultJS.volume = data.volume;
@@ -355,8 +360,7 @@ var DefaultJS = {
 			/*
 			 * Set xfade:
 			*/
-			if (!DefaultJS.xfade_bar_locked)
-				$("#player_xfade_bar").slider("value", parseInt(data.xfade));
+			$("#player_xfade_bar").slider("value", parseInt(data.xfade));
 			if (DefaultJS.xfade == -1)
 			{
 				DefaultJS.xfade = data.xfade;
@@ -455,6 +459,7 @@ var DefaultJS = {
 			/*
 			 * Player time:
 			*/
+			window.clearInterval(DefaultJS.increase_time_interval);
 			if (data.state == "stop")
 			{
 				$("#player_time").addClass("invisible");
@@ -467,6 +472,7 @@ var DefaultJS = {
 				 * Elapsed time:
 				*/
 				t = parseInt(data.time.split(':')[0]);
+				DefaultJS.songelapsed = t;
 				min = Math.floor(t/60.);
 				sec = t-min*60;
 				if (sec < 10)
@@ -478,6 +484,7 @@ var DefaultJS = {
 				 * Song duration:
 				*/
 				t = parseInt(data.time.split(':')[1]);
+				DefaultJS.songduration = t;
 				min = Math.floor(t/60.);
 				sec = t-min*60;
 				if (sec < 10)
@@ -490,6 +497,8 @@ var DefaultJS = {
 				*/
 				$("#player_time").removeClass("invisible");
 			};
+			if (data.state == "play")
+				DefaultJS.increase_time_interval = window.setInterval(DefaultJS.increase_time, 1000);
 			/*
 			 * Save status data:
 			*/
