@@ -164,6 +164,9 @@ table#player_playlist tr.even {
 table#player_playlist tr.playing {
 	background-color: #FFD588;
 }
+span#player_error {
+	font-size: x-large;
+}
 table#database_table {
 	width: 100%;
 }

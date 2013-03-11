@@ -298,6 +298,16 @@ var DefaultJS = {
 			if (!DefaultJS.xfade_bar_locked)
 				$("#player_xfade_bar").slider("value", parseInt(data.xfade));
 			/*
+			 * Set error message:
+			*/
+			if (data.error != null)
+			{
+				$("#player_error").html("Error: " + data.error);
+				$("#player_error").removeClass("invisible");
+			}
+			else
+				$("#player_error").addClass("invisible");
+			/*
 			 * Repeat mode:
 			*/
 			if (data.repeat == '1' && document.getElementById("player_repeat").checked == false)
