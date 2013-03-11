@@ -113,7 +113,14 @@ default_permissions = {
 	},
 	"database": {
 		# This permission is necessary to browse through the database:
-		"view": True
+		"view": True,
+		# This permission is necessary to update the database
+		# (add new, remove old & update changed files):
+		"update": False,
+		# This permission is necessary to rescan the database
+		# (same as update, but scans all files, so it needs MUCH more time when you
+		# have a huge music database - be careful when giving people this right):
+		"rescan": False
 	},
 	"filesystem": {
 		# This permission is necessary to browse through the server filesystem:

@@ -36,6 +36,10 @@ database.view
 	artists
 	albums
 	songs
+database.update
+	update
+database.rescan
+	rescan
 filesystem.view
 	ls
 search

@@ -436,6 +436,16 @@ class WebMPD_Ajax(object):
 				except socket.timeout:
 					self.mpd._sock = None
 					return json.dumps([])
+			elif action == "update":
+				res = self.check_permission(cookie_env, "database.update")
+				if res is not None:
+					return res
+				return json.dumps(self.mpd.update())
+			elif action == "rescan":
+				res = self.check_permission(cookie_env, "database.rescan")
+				if res is not None:
+					return res
+				return json.dumps(self.mpd.rescan())
 			else:
 				return self.get_error(101, "Invalid action specified!")
 
