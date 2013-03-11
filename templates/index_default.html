@@ -89,6 +89,8 @@
 					</div>
 				</div>
 				<div id="player_list_tabs-2">
+					<a href="#update" onclick="return !DefaultJS.update_database();" class="invisible" id="database_update"><img src="res/img/view-refresh.png" width="32" height="32" title="Update database" alt="Update database" /></a>
+					<a href="#rescan" onclick="return !DefaultJS.rescan_database();" class="invisible" id="database_rescan"><img src="res/img/view-refresh-warning.png" width="32" height="32" title="Rescan database" alt="Rescan database" /></a>
 					<table id="database_table">
 						<thead>
 							<tr>

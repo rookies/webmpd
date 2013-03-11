@@ -228,6 +228,28 @@ var DefaultJS = {
 				$("#player_list_tabs").tabs("disable", 1);
 			};
 			/*
+			 * database.update
+			*/
+			if (data.database.update)
+			{
+				$("#database_update").removeClass("invisible");
+			}
+			else
+			{
+				$("#database_update").addClass("invisible");
+			};
+			/*
+			 * database.rescan
+			*/
+			if (data.database.rescan)
+			{
+				$("#database_rescan").removeClass("invisible");
+			}
+			else
+			{
+				$("#database_rescan").addClass("invisible");
+			};
+			/*
 			 * filesystem.view
 			*/
 			if (data.filesystem.view)
@@ -1276,6 +1298,23 @@ var DefaultJS = {
 		$.get('ajax.py?action=shuffle', function (data) {
 			DefaultJS.get_status();
 		});
+		return true;
+	},
+	update_database: function ()
+	{
+		$.get('ajax.py?action=update', function (data) {
+			DefaultJS.show_status('Database update started.');
+		});
+		return true;
+	},
+	rescan_database: function ()
+	{
+		if (confirm("Do you REALLY want to rescan the database? This may take a lot of time."))
+		{
+			$.get('ajax.py?action=rescan', function (data) {
+				DefaultJS.show_status('Database rescan started.');
+			});
+		};
 		return true;
 	}
 }
