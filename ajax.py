@@ -21,7 +21,7 @@
 #
 
 ## IMPORT STANDARD LIBRARIES:
-import json, os, urllib.parse, sys, time, traceback
+import json, os, urllib.parse, sys, time, traceback, socket
 ## IMPORT DELIVERED LIBRARIES:
 import libs.config as config
 import libs.mpd as mpd
@@ -72,7 +72,7 @@ class WebMPD_Ajax(object):
 			if action == "permissions":
 				return json.dumps(usermanager.get_permissions(cookie_env))
 			elif action == "currentsong":
-				res = res = self.check_permission(cookie_env, "playback.view")
+				res = self.check_permission(cookie_env, "playback.view")
 				if res is not None:
 					return res
 				return json.dumps(self.mpd.currentsong())
@@ -430,6 +430,12 @@ class WebMPD_Ajax(object):
 				if res is not None:
 					return res
 				return json.dumps(self.mpd.shuffle())
+			elif action == "idle":
+				try:
+					return json.dumps(self.mpd.idle())
+				except socket.timeout:
+					self.mpd._sock = None
+					return json.dumps([])
 			else:
 				return self.get_error(101, "Invalid action specified!")
 

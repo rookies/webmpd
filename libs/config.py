@@ -58,10 +58,11 @@ password = None
 timeout = 10
 
 ## Type: integer or None
-## Description: The idle timeout for the connection with the MPD server.
-##   Normally, this is only necessary for FastCGI, because in CGI-mode,
-##   the connection gets closed a few moments after opening it.
-idletimeout = None
+## Description: The timeout for idle commands to the MPD server.
+##   If you set it too low, the clients do too many requests to the server.
+##   If you set it too high, the processes are locked too long and are not available for
+##   other requests.
+idletimeout = 5
 
 ## Type: string
 ## Description: The universal salt for the user password hashes.

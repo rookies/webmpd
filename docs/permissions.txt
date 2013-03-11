@@ -1,6 +1,6 @@
----
-	permissions
 access
+	permissions
+	idle
 playback.view
 	currentsong
 	status
