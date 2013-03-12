@@ -25,6 +25,7 @@ var DefaultJS = {
 	status_data: null,
 	progress_bar_locked: false,
 	first_statuscheck: true,
+	update_currentsong: false,
 	playlist: [],
 	permissions: null,
 	volume: -1,
@@ -306,8 +307,8 @@ var DefaultJS = {
 				switch (data[i])
 				{
 					case "player":
+						DefaultJS.update_currentsong = true;
 						DefaultJS.get_status();
-						DefaultJS.get_currentsong();
 						DefaultJS.get_playlist();
 						break;
 					case "playlist":
@@ -514,6 +515,11 @@ var DefaultJS = {
 					DefaultJS.get_playlist();
 				else
 					$("#player_playlist_empty").removeClass("invisible");
+			};
+			if (DefaultJS.update_currentsong)
+			{
+				DefaultJS.update_currentsong = false;
+				DefaultJS.get_currentsong();
 			};
 			/*
 			 * Set first_statuscheck variable:
