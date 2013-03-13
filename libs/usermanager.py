@@ -195,7 +195,7 @@ def get_permissions (cookie_env):
 			`sessions`.`sid` = ? AND
 			`users`.`id` = `sessions`.`uid` AND
 			`permissions`.`group` = `users`.`group`
-	""", (cookies["webmpd_sid"], )).fetchmany()
+	""", (cookies["webmpd_sid"], )).fetchall()
 	cursor.close()
 	## Run through database permissions:
 	for perm in rows:
